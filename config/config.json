@@ -1,4 +1,5 @@
 {
     "hostname": "atom.unigeorge.uk",
-    "apiHostname": "atom.unigeorge.uk:443"
+    "apiLocation": "http://atom.unigeorge.uk:3000/api/v1",
+    "debugMode": true
 }

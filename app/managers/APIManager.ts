@@ -30,6 +30,16 @@ class Auth {
         if (req?.data) return req.data;
         else return undefined;
     }
+
+    static async getAccountRegistrationOpen(): Promise<boolean | undefined> {
+        let req = await APIManager.request({
+            method: "get",
+            url: "/auth/requestsopen"
+        });
+
+        if (req?.data) return req.data;
+        else return undefined;
+    }
 }
 
 class APIManager {
@@ -51,12 +61,12 @@ class APIManager {
      */
     static init() {
         APIManager.#axios = axios.create({
-            baseURL: `https://${config.hostname}/api/`,
+            baseURL: config.apiLocation,
             allowAbsoluteUrls: false,
             timeout: 1000,
             headers: {
                 Accept: "application/json"
-            }
+            },
         });
 
         APIManager.#initialised = true;
