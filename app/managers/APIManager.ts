@@ -16,7 +16,7 @@ class Auth {
             });
 
             return true;
-        } catch {
+        } catch (e) {            
             return false;
         }
     }
@@ -67,6 +67,7 @@ class APIManager {
             headers: {
                 Accept: "application/json"
             },
+            withCredentials: true
         });
 
         APIManager.#initialised = true;
@@ -79,7 +80,7 @@ class APIManager {
      */
     static async request(data: AxiosRequestConfig<any>): Promise<AxiosResponse<any, any> | undefined> {
         if (!APIManager.#initialised) APIManager.init();
-        return APIManager.#axios?.request(data);
+        return await APIManager.#axios?.request(data);
     }
 }
 

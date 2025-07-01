@@ -1,37 +1,28 @@
-import { Alert, CircularProgress, Stack, Typography, Link as MUILink, Button, Divider } from "@mui/joy";
 import { useEffect, useState, type ReactNode } from "react";
-import type { LoginType } from "../../../managers/APIManager";
-import APIManager from "../../../managers/APIManager";
+import APIManager, { type LoginType } from "../../../managers/APIManager";
+import { ErrorCard } from "../../../components/ErrorCard/ErrorCard";
+import { Button, CircularProgress, Stack, Typography, Link as MUILink, Divider, Alert } from "@mui/joy";
 import { Google, Refresh, Warning } from "@mui/icons-material";
 import { Link } from "react-router";
 import interleave from "../../../util/interleave";
-import { LocalLogin } from "../../../components/auth/LocalLogin";
-import { Small } from "../../../components/Small/Small";
+import { LocalSignUp } from "../../../components/auth/LocalSignUp";
 
-export const LoginPage = (): ReactNode => {
+export const SignupPage = (): ReactNode => {
     const [allowedMethods, setAllowedMethods] = useState<LoginType[]>();
     const [methodLoadError, setMethodLoadError] = useState<any>(undefined);
     const [loadingMethods, setLoadingMethods] = useState<boolean>(true);
-    const [accountRequestsOpen, setAccountRequestsOpen] = useState<boolean>(false);
-    const [loadingAccountRequestsOpen, setLoadingAccountRequestsOpen] = useState<boolean>(true);
 
     const attemptLoad = () => {
         APIManager.auth.getLoginTypes().then(types => {
             if (types?.length) {
                 setAllowedMethods(types);
             } else {
-                setMethodLoadError("noconfigset");
+                setMethodLoadError("ERR_NO_SERVER_LOGIN_CONFIGS")
             }
             setLoadingMethods(false);
         }).catch(e => {
             setMethodLoadError(e);
             setLoadingMethods(false);
-        });
-        
-        APIManager.auth.getAccountRegistrationOpen().then(open => {
-            if (open) setAccountRequestsOpen(open);
-        }).finally(() => {
-            setLoadingAccountRequestsOpen(false);
         });
     }
 
@@ -39,8 +30,6 @@ export const LoginPage = (): ReactNode => {
         setAllowedMethods(undefined);
         setMethodLoadError(undefined);
         setLoadingMethods(true);
-        setAccountRequestsOpen(false);
-        setLoadingAccountRequestsOpen(true);
     }
 
     useEffect(() => {
@@ -48,9 +37,7 @@ export const LoginPage = (): ReactNode => {
     }, []);
 
     const isLoading = () => [
-        loadingMethods,
-        loadingAccountRequestsOpen
-
+        loadingMethods
     ].some(x => x);
 
     if (isLoading()) {
@@ -59,7 +46,7 @@ export const LoginPage = (): ReactNode => {
                 direction="row"
                 justifyContent="center"
             >
-                <CircularProgress
+                <CircularProgress 
                     variant="soft"
                 />
             </Stack>
@@ -69,33 +56,18 @@ export const LoginPage = (): ReactNode => {
     if (methodLoadError) {
         return (
             <Stack
-                direction="column"
                 gap={4}
             >
-                <div>
-                    <Alert
-                        startDecorator={<Warning />}
-                        variant="outlined"
-                        color="danger"
+                <ErrorCard
+                    code={methodLoadError}
+                >
+                    <Typography
+                        level="body-md"
                     >
-                        <div>
-                            can't load login configuration
-                            <Typography
-                                level="body-sm"
-                                component="div"
-                            >
-                                i can't seem to load the login settings. please check your internet connection, or contact the owner of this instance of atom.
-                            </Typography>
-                        </div>
-                    </Alert>
-                    <Small
-                        sx={{
-                            mt: 1
-                        }}
-                    >
-                        ERR_NO_SERVER_LOGIN_CONFIGS
-                    </Small>
-                </div>
+                        either i can't load the authentication methods, or there are none set up. please check your connection, then contact the owner of this instance of atom.
+                    </Typography>
+                </ErrorCard>
+
                 <Button
                     size="sm"
                     color="primary"
@@ -115,39 +87,32 @@ export const LoginPage = (): ReactNode => {
 
     return (
         <Stack
-            sx={{
-                gap: 4
-            }}
+            gap={4}
         >
             <Stack
-                sx={{
-                    gap: 1
-                }}
+                gap={1}
             >
                 <Typography
                     component="h1"
                     level="h3"
                 >
-                    sign in
+                    sign up
                 </Typography>
-                {
-                    accountRequestsOpen ?
-                    <Typography
-                        level="body-sm"
-                        component="div"
+                <Typography
+                    level="body-sm"
+                    component="div"
+                >
+                    already have an account?{" "}
+                    <Link
+                        to="/login"
                     >
-                        don't have an account?{" "}
-                        <Link
-                            to="/signup"
+                        <MUILink
+                            component="div"
                         >
-                            <MUILink component="div">
-                                request one here!
-                            </MUILink>
-                        </Link>
-                    </Typography>
-                    :
-                    null
-                }
+                            login here!
+                        </MUILink>
+                    </Link>
+                </Typography>
             </Stack>
             {
                 interleave([...new Set(allowedMethods)]?.map(x => {
@@ -161,12 +126,12 @@ export const LoginPage = (): ReactNode => {
                                 fullWidth
                                 startDecorator={<Google />}
                             >
-                                login with google
+                                sign up with google
                             </Button>
                         );
                     case "local":
                         return (
-                            <LocalLogin key={x} />
+                            <LocalSignUp />
                         );
                     default:
                         return (
@@ -178,7 +143,7 @@ export const LoginPage = (): ReactNode => {
                             >
                                 unsupported authentication method: { x }
                             </Alert>
-                        );
+                        )
                     }
                 }) as ReactNode[], <Divider>or</Divider>)
             }

@@ -1,5 +1,8 @@
 {
     "hostname": "atom.unigeorge.uk",
     "apiLocation": "http://atom.unigeorge.uk:3000/api/v1",
-    "debugMode": true
+    "debugMode": true,
+    "auth": {
+        "location": "http://atom.unigeorge.uk:3000/auth"
+    }
 }

@@ -3,6 +3,8 @@ import type { PropsWithChildren, ReactNode } from "react";
 
 // @ts-expect-error
 import "@fontsource-variable/outfit";
+//@ts-expect-error
+import "@fontsource/ibm-plex-mono"
 
 const theme = extendTheme({
     cssVarPrefix: "atom",
@@ -14,8 +16,9 @@ export const RootNode = ({ children }: PropsWithChildren): ReactNode => {
             theme={theme}
             modeStorageKey="mode-toggle"
             disableNestedContext
+            defaultMode="dark"
         >
-            <CssBaseline />
+            <CssBaseline  />
 
             { children }
         </CssVarsProvider>

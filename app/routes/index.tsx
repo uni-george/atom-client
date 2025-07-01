@@ -9,6 +9,7 @@ export function meta({}: Route.MetaArgs) {
     return defaultMeta;
 }
 
+// @ts-expect-error
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     let loggedIn = await APIManager.auth.loggedIn();
     
@@ -16,6 +17,7 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
     else return redirect("/dashboard");
 }
 
+// @ts-expect-error
 export default function Home({ loaderData }: Route.ComponentProps): ReactNode {
     return (
         <p>

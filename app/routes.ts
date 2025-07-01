@@ -7,7 +7,8 @@ export default [
         
         // auth stuff
         layout("pages/auth/AuthLayout.tsx", [
-            route("login", "routes/auth/login.tsx")
+            route("login", "routes/auth/login.tsx"),
+            route("signup", "routes/auth/signup.tsx")
         ])
     ])
 ] satisfies RouteConfig;
