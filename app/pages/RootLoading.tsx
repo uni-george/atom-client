@@ -1,8 +1,9 @@
 import type { ReactNode } from "react"
-import { Box } from "@mui/joy";
+import { Box, type BoxProps } from "@mui/joy";
 import { AtomLogoLoading } from "../components/branding/AtomLogo/AtomLogo";
 
-export const RootLoading = (): ReactNode => {
+export const RootLoading = (props: BoxProps): ReactNode => {
+    const { sx, ...other } = props;
 
     return (
         <>
@@ -25,8 +26,10 @@ export const RootLoading = (): ReactNode => {
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
-                    alignItems: "center"
+                    alignItems: "center",
+                    ...sx
                 }}
+                {...other}
             >
                 <AtomLogoLoading />
             </Box>

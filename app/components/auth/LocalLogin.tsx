@@ -1,8 +1,9 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Checkbox, FormControl, FormLabel, IconButton, Input, Stack, Link as MUILink, Box, Button, LinearProgress } from "@mui/joy";
+import { FormControl, FormLabel, IconButton, Input, Stack, Link as MUILink, Box, Button, LinearProgress } from "@mui/joy";
 import { useState, type FormEvent, type ReactNode } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import AuthManager from "../../managers/AuthManager";
+import { AxiosError } from "axios";
 
 interface FormElements extends HTMLFormControlsCollection {
     username: HTMLInputElement;
@@ -17,9 +18,8 @@ interface LocalSignInFormElement extends HTMLFormElement {
 export const LocalLogin = (): ReactNode => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [attemptingLogin, setAttemptingLogin] = useState<boolean>(false);
-
-    // @ts-expect-error
-    const [loginError, setLoginError] = useState<string | undefined>();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
 
     const showLoading = () => [
         attemptingLogin
@@ -33,19 +33,40 @@ export const LocalLogin = (): ReactNode => {
                 
                 const data = {
                     username: formElements.username.value,
-                    password: formElements.password.value,
-                    persistent: formElements.persistent.value
+                    password: formElements.password.value
                 };
-
-                // TODO something here
+                
                 setAttemptingLogin(true);
+                
+                // remove login error params
+                [
+                    "error",
+                    "errorMessage",
+                    "errorCode"
+                ].forEach(x => {
+                    if (searchParams.has(x)) searchParams.delete(x);
+                });
+                setSearchParams(searchParams);
 
-                AuthManager.local.login(data.username, data.password).then(x => {
-                    console.log(`it was ${x}`);
+                AuthManager.local.login(data.username, data.password).then(success => {
+                    if (!success) {
+                        searchParams.set("error", "local");
+                        setSearchParams(searchParams);
+                        setAttemptingLogin(false);
+                    } else {
+                        console.log("hellooooooooooo");
+                        navigate("/dashboard");
+                    }
                 }).catch(e => {
-                    console.log("it did not like that:");
-                    console.log(e);
-                    setLoginError(e);
+                    if (e instanceof AxiosError && e.status === 400) {
+                        searchParams.set("error", "local");
+                        searchParams.set("errorMessage", "invalid username and/or password :(");
+                        searchParams.set("errorCode", "ERR_LOCAL_INVALID_CREDENTIALS");
+                        setSearchParams(searchParams);
+                    } else {
+                        searchParams.set("error", "local");
+                    }
+
                     setAttemptingLogin(false);
                 })
             }}
@@ -112,17 +133,17 @@ export const LocalLogin = (): ReactNode => {
             <Stack
                 sx={{
                     gap: 3,
-                    mt: 2
+                    mt: 1
                 }}
             >
                 <Box
                     sx={{
                         display: "flex",
-                        justifyContent: "space-between",
+                        justifyContent: "end",
                         alignItems: "center"
                     }}
                 >
-                    <Checkbox size="sm" label="remember me" name="persistent" disabled={showLoading()} />
+                    {/* <Checkbox size="sm" label="remember me" name="persistent" disabled={showLoading()} /> */}
                     <Link to="/passwordreset">
                         <MUILink
                             level="title-sm"

@@ -5,16 +5,14 @@ class LocalAuthManager {
     static async login(username: string, password: string): Promise<boolean> {
         let res = await AuthManager.request({
             method: "post",
-            url: "/local",
+            url: "/login/local",
             data: {
                 username,
                 password
             }
         });
 
-        console.log("NOWWWWWWWWW");
-        console.log(res);
-
+        if (res) return true;
         return false;
     }
 }

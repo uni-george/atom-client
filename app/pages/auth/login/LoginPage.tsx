@@ -1,9 +1,9 @@
 import { Alert, CircularProgress, Stack, Typography, Link as MUILink, Button, Divider } from "@mui/joy";
-import { useEffect, useState, type ReactNode } from "react";
-import type { LoginType } from "../../../managers/APIManager";
+import { useEffect, useState, type PropsWithChildren, type ReactNode } from "react";
+import type { LoginType } from "../../../managers/api/Auth";
 import APIManager from "../../../managers/APIManager";
-import { Google, Refresh, Warning } from "@mui/icons-material";
-import { Link } from "react-router";
+import { Google, Refresh, Report, Warning } from "@mui/icons-material";
+import { Link, useSearchParams } from "react-router";
 import interleave from "../../../util/interleave";
 import { LocalLogin } from "../../../components/auth/LocalLogin";
 import { Small } from "../../../components/Small/Small";
@@ -116,7 +116,7 @@ export const LoginPage = (): ReactNode => {
     return (
         <Stack
             sx={{
-                gap: 4
+                gap: 4,
             }}
         >
             <Stack
@@ -154,33 +154,89 @@ export const LoginPage = (): ReactNode => {
                     switch(x) {
                     case "google":
                         return (
-                            <Button
-                                key={x}
-                                variant="soft"
-                                color="neutral"
-                                fullWidth
-                                startDecorator={<Google />}
-                            >
-                                login with google
-                            </Button>
+                            <LoginErrorAlert method={x}>
+                                <Button
+                                    key={x}
+                                    variant="soft"
+                                    color="neutral"
+                                    fullWidth
+                                    startDecorator={<Google />}
+                                    onClick={() => {
+                                        document.location.href = "/auth/login/google"
+                                    }}
+                                >
+                                    login with google
+                                </Button>
+                            </LoginErrorAlert>
                         );
                     case "local":
                         return (
-                            <LocalLogin key={x} />
+                            <LoginErrorAlert method={x}>
+                                <LocalLogin key={x} />
+                            </LoginErrorAlert>
                         );
                     default:
                         return (
-                            <Alert
-                                key={x}
-                                startDecorator={<Warning />}
-                                color="warning"
-                                variant="outlined"
-                            >
-                                unsupported authentication method: { x }
-                            </Alert>
+                            <LoginErrorAlert method={x}>
+                                <Alert
+                                    key={x}
+                                    startDecorator={<Warning />}
+                                    color="warning"
+                                    variant="outlined"
+                                >
+                                    unsupported authentication method: { x }
+                                </Alert>
+                            </LoginErrorAlert>
                         );
                     }
                 }) as ReactNode[], <Divider>or</Divider>)
+            }
+        </Stack>
+    );
+}
+
+interface LoginErrorAlertProps {
+    method: string;
+}
+
+const LoginErrorAlert = ({ method, children }: PropsWithChildren<LoginErrorAlertProps>): ReactNode => {
+    // @ts-expect-error
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    return (
+        <Stack
+            gap={1}
+        >
+            { children }
+            {
+                searchParams.get("error") == method ? 
+                <Alert
+                    startDecorator={<Report />}
+                    sx={{
+                        alignItems: "flex-start"
+                    }}
+                    variant="soft"
+                    color="danger"
+                >
+                    <div>
+                        <div>couldn't log in</div>
+                        <Typography
+                            level="body-sm"
+                            color="danger"
+                            textTransform="lowercase"
+                        >
+                            { searchParams.get("errorMessage") || "something happened and i couldn't log you in" }
+                        </Typography>
+                        
+                        <Small
+                            textTransform="uppercase"
+                        >
+                            { searchParams.get("errorCode") || "ERR_UNKNOWN" }
+                        </Small>
+                    </div>
+                </Alert>
+                : 
+                null
             }
         </Stack>
     );

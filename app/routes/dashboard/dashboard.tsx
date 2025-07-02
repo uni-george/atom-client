@@ -1,24 +1,23 @@
 import type { ReactNode } from "react";
-import type { Route } from "./+types/login";
-import { LoginPage } from "../../pages/auth/login/LoginPage";
+import type { Route } from "./+types/dashboard";
+import { DashboardLayout } from "../../pages/dashboard/DashboardLayout";
 import { getDefaultMeta } from "../../util/defaultMeta";
 import APIManager from "../../managers/APIManager";
 import { redirect } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
-    return getDefaultMeta("log in - atom");
+    return getDefaultMeta("dashboard - atom");
 }
 
 export async function clientLoader() {
     let loggedIn = await APIManager.auth.loggedIn();
 
-    if (loggedIn) return redirect("/dashboard");
-    return { };
+    if (!loggedIn) return redirect("/login");
+    else return { };
 }
 
-// @ts-expect-error
-export default function Login({ loaderData }: Route.ComponentProps): ReactNode {
+export default function Dashboard(): ReactNode {
     return (
-        <LoginPage />
+        <DashboardLayout />
     );
 }

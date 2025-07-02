@@ -1,46 +1,7 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from "axios";
 import config from "../../config/config.json";
-
-export type LoginType = "local" | "google";
-
-class Auth {
-    /**
-     * Check if the user is logged in.
-     * @returns True/false depending on whether the user is logged in.
-     */
-    static async loggedIn(): Promise<boolean> {
-        try {
-            await APIManager.request({
-                method: "get",
-                url: "/user/me"
-            });
-
-            return true;
-        } catch (e) {            
-            return false;
-        }
-    }
-
-    static async getLoginTypes(): Promise<LoginType[] | undefined> {
-        let req = await APIManager.request({
-            method: "get",
-            url: "/auth/methods"
-        });
-
-        if (req?.data) return req.data;
-        else return undefined;
-    }
-
-    static async getAccountRegistrationOpen(): Promise<boolean | undefined> {
-        let req = await APIManager.request({
-            method: "get",
-            url: "/auth/requestsopen"
-        });
-
-        if (req?.data) return req.data;
-        else return undefined;
-    }
-}
+import { Auth } from "./api/Auth";
+import { User } from "./api/User";
 
 class APIManager {
     /**
@@ -55,6 +16,7 @@ class APIManager {
 
     // children
     static auth = Auth;
+    static user = User;
 
     /**
      * Initialise the APIManager.
@@ -63,7 +25,7 @@ class APIManager {
         APIManager.#axios = axios.create({
             baseURL: config.apiLocation,
             allowAbsoluteUrls: false,
-            timeout: 1000,
+            timeout: 5000,
             headers: {
                 Accept: "application/json"
             },

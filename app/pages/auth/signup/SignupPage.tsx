@@ -1,11 +1,13 @@
-import { useEffect, useState, type ReactNode } from "react";
-import APIManager, { type LoginType } from "../../../managers/APIManager";
+import { useEffect, useState, type PropsWithChildren, type ReactNode } from "react";
+import APIManager from "../../../managers/APIManager";
+import type { LoginType } from "../../../managers/api/Auth";
 import { ErrorCard } from "../../../components/ErrorCard/ErrorCard";
 import { Button, CircularProgress, Stack, Typography, Link as MUILink, Divider, Alert } from "@mui/joy";
-import { Google, Refresh, Warning } from "@mui/icons-material";
-import { Link } from "react-router";
+import { Google, Refresh, Report, Warning } from "@mui/icons-material";
+import { Link, useSearchParams } from "react-router";
 import interleave from "../../../util/interleave";
 import { LocalSignUp } from "../../../components/auth/LocalSignUp";
+import { Small } from "../../../components/Small/Small";
 
 export const SignupPage = (): ReactNode => {
     const [allowedMethods, setAllowedMethods] = useState<LoginType[]>();
@@ -13,7 +15,7 @@ export const SignupPage = (): ReactNode => {
     const [loadingMethods, setLoadingMethods] = useState<boolean>(true);
 
     const attemptLoad = () => {
-        APIManager.auth.getLoginTypes().then(types => {
+        APIManager.auth.getSignupTypes().then(types => {
             if (types?.length) {
                 setAllowedMethods(types);
             } else {
@@ -119,33 +121,95 @@ export const SignupPage = (): ReactNode => {
                     switch(x) {
                     case "google":
                         return (
-                            <Button
-                                key={x}
-                                variant="soft"
-                                color="neutral"
-                                fullWidth
-                                startDecorator={<Google />}
+                            <SignUpErrorAlert
+                                method={x}
                             >
-                                sign up with google
-                            </Button>
+                                <Button
+                                    key={x}
+                                    variant="soft"
+                                    color="neutral"
+                                    fullWidth
+                                    startDecorator={<Google />}
+                                    onClick={() => {
+                                        document.location.href = "/auth/signup/google"
+                                    }}
+                                >
+                                    sign up with google
+                                </Button>
+                            </SignUpErrorAlert>
                         );
                     case "local":
                         return (
-                            <LocalSignUp />
+                            <SignUpErrorAlert
+                                method={x}
+                            >
+                                <LocalSignUp />
+                            </SignUpErrorAlert>
                         );
                     default:
                         return (
-                            <Alert
-                                key={x}
-                                startDecorator={<Warning />}
-                                color="warning"
-                                variant="outlined"
+                            <SignUpErrorAlert
+                                method={x}
                             >
-                                unsupported authentication method: { x }
-                            </Alert>
+                                <Alert
+                                    key={x}
+                                    startDecorator={<Warning />}
+                                    color="warning"
+                                    variant="outlined"
+                                >
+                                    unsupported authentication method: { x }
+                                </Alert>
+                            </SignUpErrorAlert>
                         )
                     }
                 }) as ReactNode[], <Divider>or</Divider>)
+            }
+        </Stack>
+    );
+}
+
+interface SignUpErrorAlertProps {
+    method: string;
+}
+
+const SignUpErrorAlert = ({ method, children }: PropsWithChildren<SignUpErrorAlertProps>): ReactNode => {
+    // @ts-expect-error
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    return (
+        <Stack
+            gap={1}
+        >
+            { children }
+            {
+                searchParams.get("error") == method ? 
+                <Alert
+                    startDecorator={<Report />}
+                    sx={{
+                        alignItems: "flex-start"
+                    }}
+                    variant="soft"
+                    color="danger"
+                >
+                    <div>
+                        <div>couldn't sign up</div>
+                        <Typography
+                            level="body-sm"
+                            color="danger"
+                            textTransform="lowercase"
+                        >
+                            { searchParams.get("errorMessage") || "something happened and i couldn't sign you up" }
+                        </Typography>
+                        
+                        <Small
+                            textTransform="lowercase"
+                        >
+                            { searchParams.get("errorCode") || "ERR_UNKNOWN" }
+                        </Small>
+                    </div>
+                </Alert>
+                : 
+                null
             }
         </Stack>
     );

@@ -9,6 +9,13 @@ export default [
         layout("pages/auth/AuthLayout.tsx", [
             route("login", "routes/auth/login.tsx"),
             route("signup", "routes/auth/signup.tsx")
+        ]),
+
+        layout("pages/auth/AuthGuardLayout.tsx", [
+            // auth guarded stuff
+            route("dashboard", "routes/dashboard/dashboard.tsx", [
+
+            ])
         ])
     ])
 ] satisfies RouteConfig;
