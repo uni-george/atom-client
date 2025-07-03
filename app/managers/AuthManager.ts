@@ -2,10 +2,27 @@ import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse 
 import config from "../../config/config.json";
 
 class LocalAuthManager {
+    static usernamePattern = /^[a-zA-Z0-9._-]{3,16}$/;
+    static passwordPattern = /^[a-zA-Z0-9\._+\-/\\*=!"£$%^&*()\[\]{}:;@#~&<>? ]{12,255}$/;
+
     static async login(username: string, password: string): Promise<boolean> {
         let res = await AuthManager.request({
             method: "post",
             url: "/login/local",
+            data: {
+                username,
+                password
+            }
+        });
+
+        if (res) return true;
+        return false;
+    }
+
+    static async signup(username: string, password: string): Promise<boolean> {
+        let res = await AuthManager.request({
+            method: "post",
+            url: "/signup/local",
             data: {
                 username,
                 password

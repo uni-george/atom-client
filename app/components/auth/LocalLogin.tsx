@@ -4,6 +4,8 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import AuthManager from "../../managers/AuthManager";
 import { AxiosError } from "axios";
+import { FormLoadingBox } from "../form/FormLoadingBox";
+import validator from "validator";
 
 interface FormElements extends HTMLFormControlsCollection {
     username: HTMLInputElement;
@@ -31,7 +33,7 @@ export const LocalLogin = (): ReactNode => {
                 e.preventDefault();
                 const formElements = e.currentTarget.elements;
                 
-                const data = {
+                let data = {
                     username: formElements.username.value,
                     password: formElements.password.value
                 };
@@ -47,6 +49,7 @@ export const LocalLogin = (): ReactNode => {
                     if (searchParams.has(x)) searchParams.delete(x);
                 });
                 setSearchParams(searchParams);
+
 
                 AuthManager.local.login(data.username, data.password).then(success => {
                     if (!success) {
@@ -65,6 +68,7 @@ export const LocalLogin = (): ReactNode => {
                         setSearchParams(searchParams);
                     } else {
                         searchParams.set("error", "local");
+                        setSearchParams(searchParams);
                     }
 
                     setAttemptingLogin(false);
@@ -75,36 +79,7 @@ export const LocalLogin = (): ReactNode => {
                 position: "relative"
             }}
         >
-            <Box
-                sx={theme => ({
-                    position: "absolute",
-                    top: `-${theme.radius.xl}`,
-                    left: `-${theme.radius.xl}`,
-                    width: `calc(100% + (2 * ${theme.radius.xl}))`,
-                    height: `calc(100% + (2 * ${theme.radius.xl}))`,
-                    background: theme.palette.background.surface,
-                    zIndex: 1,
-                    opacity: showLoading() ? 0.8 : 0,
-                    borderRadius: theme.radius.lg,
-                    pointerEvents: "none",
-                    transition: "opacity 0.2s"
-                })}
-            >
-                <Box
-                    sx={{
-                        width: "80%",
-                        mx: "auto",
-                        height: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center"
-                    }}
-                >
-                    <Box sx={{ width: "100%" }}>
-                        <LinearProgress />
-                    </Box>
-                </Box>
-            </Box>
+            <FormLoadingBox show={showLoading()} />
 
             <FormControl required disabled={showLoading()}>
                 <FormLabel>username</FormLabel>

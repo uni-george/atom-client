@@ -15,8 +15,8 @@ export const ErrorCard = (props: ErrorCardProps): ReactNode => {
             gap={1}
         >
             <Card
-                variant="outlined"
-                color="danger"
+                variant={variant || "outlined"}
+                color={color || "danger"}
                 {...other}
             >
                 <CardContent>
@@ -29,7 +29,9 @@ export const ErrorCard = (props: ErrorCardProps): ReactNode => {
                     { children }
                 </CardContent>
             </Card>
-            <Small>
+            <Small
+                textTransform="uppercase"
+            >
                 { code }
             </Small>
         </Stack>

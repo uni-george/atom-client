@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import AuthPageStyle from "../auth/AuthPageStyle";
 import { Small } from "../../components/Small/Small";
 import { NotFoundPage } from "./NotFoundPage";
+import { ErrorCard } from "../../components/ErrorCard/ErrorCard";
+import { Typography } from "@mui/joy";
 
 interface ErrorCatchAllHTTPPageProps {
     httpCode?: number;
@@ -9,9 +11,7 @@ interface ErrorCatchAllHTTPPageProps {
     errorCode?: string;
 }
 
-export const ErrorCatchAllHTTPPage = ({ httpCode, message, errorCode }: ErrorCatchAllHTTPPageProps): ReactNode => {
-    console.log(httpCode);
-
+export const ErrorCatchAllHTTPPage = ({ httpCode, message }: ErrorCatchAllHTTPPageProps): ReactNode => {
     return (
         <>
             <title>error - atom</title>
@@ -20,11 +20,15 @@ export const ErrorCatchAllHTTPPage = ({ httpCode, message, errorCode }: ErrorCat
                     httpCode === 404 ?
                     <NotFoundPage />
                     :
-                    <>
-                        <h1>error - {httpCode}</h1>
-                        <p>{ message }</p>
-                        <Small>{ errorCode }</Small>
-                    </>
+                    <ErrorCard
+                        code={`ERR_HTTP_${httpCode}`}
+                    >
+                        <Typography
+                            level="body-md"
+                        >
+                            { message }
+                        </Typography>
+                    </ErrorCard>
                 }
             </AuthPageStyle>
         </>

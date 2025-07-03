@@ -44,6 +44,19 @@ class APIManager {
         if (!APIManager.#initialised) APIManager.init();
         return await APIManager.#axios?.request(data);
     }
+
+    static async test(): Promise<Object|undefined> {
+        try {
+            let res = await APIManager.request({
+                method: "get",
+                url: "/test"
+            });
+
+            return res;
+        } catch (e) {
+            return false;
+        }
+    }
 }
 
 export default APIManager;

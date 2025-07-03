@@ -202,7 +202,7 @@ const SignUpErrorAlert = ({ method, children }: PropsWithChildren<SignUpErrorAle
                         </Typography>
                         
                         <Small
-                            textTransform="lowercase"
+                            textTransform="uppercase"
                         >
                             { searchParams.get("errorCode") || "ERR_UNKNOWN" }
                         </Small>

@@ -62,7 +62,11 @@ export function Layout({ children }: PropsWithChildren): ReactNode {
 
 export function HydrateFallback() {
     return (
-        <RootLoading />
+        <RootLoading
+            sx={{
+                background: "unset"
+            }}
+        />
     );
 }
 
@@ -79,12 +83,6 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
         httpCode = error.status;
 
         return (
-            // <>
-            //     <h1>
-            //     {error.status} {error.statusText}
-            //     </h1>
-            //     <p>{error.data}</p>
-            // </>
             <ErrorCatchAllHTTPPage
                 message={message}
                 httpCode={httpCode}
@@ -96,12 +94,6 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
         errorCode = "ERR_REACT";
 
         return (
-            // <div>
-            //     <h1>Error</h1>
-            //     <p>{error.message}</p>
-            //     <p>The stack trace is:</p>
-            //     <pre>{error.stack}</pre>
-            // </div>
             <ErrorCatchAllReactPage
                 message={message}
                 errorCode={errorCode}
@@ -110,29 +102,4 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     } else {
         return <h1>Unknown Error</h1>;
     }
-    // console.info("HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-
-    // // if (isRouteErrorResponse(error)) {
-    // //     message = error.status === 404 ? "404" : "error";
-    // //     details = error.status === 404 ? "not found" : error.statusText || details;
-    // // } else if (import.meta.env.DEV && error && error instanceof Error) {
-    // //     details = error.message;
-    // //     stack = error.stack;
-    // // }
-
-    // if (isRouteErrorResponse(error)) {
-    //     if (error.status === 404) {
-    //         return (
-    //             <NotFoundPage />
-    //         );
-    //     }
-    // }
-
-    // return (
-    //     <ErrorCatchAllPage
-    //         message={message}
-    //         httpCode={httpCode}
-    //         errorCode={errorCode}
-    //     />
-    // );
 }
