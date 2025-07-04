@@ -1,11 +1,10 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { FormControl, FormLabel, IconButton, Input, Stack, Link as MUILink, Box, Button, LinearProgress } from "@mui/joy";
+import { FormControl, FormLabel, IconButton, Input, Stack, Link as MUILink, Box, Button } from "@mui/joy";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import AuthManager from "../../managers/AuthManager";
 import { AxiosError } from "axios";
 import { FormLoadingBox } from "../form/FormLoadingBox";
-import validator from "validator";
 
 interface FormElements extends HTMLFormControlsCollection {
     username: HTMLInputElement;
@@ -57,7 +56,6 @@ export const LocalLogin = (): ReactNode => {
                         setSearchParams(searchParams);
                         setAttemptingLogin(false);
                     } else {
-                        console.log("hellooooooooooo");
                         navigate("/dashboard");
                     }
                 }).catch(e => {

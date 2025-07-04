@@ -27,7 +27,6 @@ export const RootLoading = (props: BoxProps): ReactNode => {
                     flexDirection: "column",
                     justifyContent: "center",
                     alignItems: "center",
-                    ...sx
                 }}
                 {...other}
             >

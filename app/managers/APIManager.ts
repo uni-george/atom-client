@@ -2,6 +2,7 @@ import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse 
 import config from "../../config/config.json";
 import { Auth } from "./api/Auth";
 import { User } from "./api/User";
+import { Image } from "./api/Image";
 
 class APIManager {
     /**
@@ -17,6 +18,7 @@ class APIManager {
     // children
     static auth = Auth;
     static user = User;
+    static image = Image;
 
     /**
      * Initialise the APIManager.

@@ -54,7 +54,7 @@ class AuthManager {
         AuthManager.#axios = axios.create({
             baseURL: config.auth.location,
             allowAbsoluteUrls: false,
-            timeout: 1000,
+            timeout: 5000,
             headers: {
                 Accept: "application/json"
             },
@@ -71,6 +71,23 @@ class AuthManager {
     static async request(data: AxiosRequestConfig<any>): Promise<AxiosResponse<any, any> | undefined> {
         if (!AuthManager.#initialised) AuthManager.init();
         return await AuthManager.#axios?.request(data);
+    }
+
+    /**
+     * Log the user out.
+     * @returns Whether or not logout attempt was successful.
+     */
+    static async logout(): Promise<boolean> {
+        try {
+            let res = await AuthManager.request({
+                method: "post",
+                url: "/logout"
+            });
+
+            return res?.status === 200;
+        } catch {
+            return false;
+        }
     }
 }
 

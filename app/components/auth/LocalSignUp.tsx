@@ -1,5 +1,5 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Button, FormControl, FormHelperText, FormLabel, IconButton, Input } from "@mui/joy";
+import { Button, FormControl, FormHelperText, formHelperTextClasses, FormLabel, IconButton, Input } from "@mui/joy";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import AuthManager from "../../managers/AuthManager";
@@ -78,13 +78,11 @@ export const LocalSignUp = (): ReactNode => {
                 }).catch(e => {
                     if (e instanceof AxiosError && e.status == 400) {
                         searchParams.set("error", "local");
-                        searchParams.set("errorMessage", "invalid username and/or password. ");
-                        searchParams.set("errorCode", "ERR_LOCAL_INVALID_SIGNUP_CREDENTIALS");
+                        searchParams.set("errorMessage", e.response?.data?.message || "invalid username and/or password. ");
+                        searchParams.set("errorCode", e.response?.data?.errorCode || "ERR_LOCAL_INVALID_SIGNUP_CREDENTIALS");
                         setSearchParams(searchParams);
                     } else {
                         searchParams.set("error", "local");
-                        console.log("this one")
-                        console.log(e);
                         setSearchParams(searchParams);
                     }
                 }).finally(() => {
@@ -101,7 +99,7 @@ export const LocalSignUp = (): ReactNode => {
             <FormControl required
                 sx={{
                     ":focus-within": {
-                        "& .MuiFormHelperText-root": {
+                        [`& .${formHelperTextClasses.root}`]: {
                             maxHeight: "100px",
                             mt: 1
                         }
@@ -125,7 +123,7 @@ export const LocalSignUp = (): ReactNode => {
                 sx={{
                     mt: -1,
                     ":focus-within": {
-                        "& .MuiFormHelperText-root": {
+                        [`& .${formHelperTextClasses.root}`]: {
                             maxHeight: "100px",
                             mt: 1
                         }

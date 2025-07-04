@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import AuthPageStyle from "../auth/AuthPageStyle";
-import { Small } from "../../components/Small/Small";
 import { NotFoundPage } from "./NotFoundPage";
 import { ErrorCard } from "../../components/ErrorCard/ErrorCard";
 import { Typography } from "@mui/joy";

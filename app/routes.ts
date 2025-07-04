@@ -13,8 +13,9 @@ export default [
 
         layout("pages/auth/AuthGuardLayout.tsx", [
             // auth guarded stuff
-            route("dashboard", "routes/dashboard/dashboard.tsx", [
 
+            layout("pages/dashboard/DashboardLayout.tsx", [
+                route("dashboard", "routes/dashboard/home.tsx")
             ])
         ])
     ])

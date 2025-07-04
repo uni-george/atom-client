@@ -62,11 +62,7 @@ export function Layout({ children }: PropsWithChildren): ReactNode {
 
 export function HydrateFallback() {
     return (
-        <RootLoading
-            sx={{
-                background: "unset"
-            }}
-        />
+        <RootLoading />
     );
 }
 

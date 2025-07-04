@@ -10,4 +10,8 @@ export type User = {
      * The user's display name.
      */
     name: string;
+    /**
+     * The user's avatar ID.
+     */
+    avatarID?: string;
 }

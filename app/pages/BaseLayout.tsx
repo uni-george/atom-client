@@ -39,11 +39,7 @@ export default function BaseLayout({ children }: PropsWithChildren): ReactNode {
     }
 
     if (isTestingAPI) return (
-        <RootLoading
-            sx={{
-                background: "unset"
-            }}
-        />
+        <RootLoading />
     );
 
     return (
