@@ -1,4 +1,4 @@
-import { type RouteConfig, index, layout, route } from "@react-router/dev/routes";
+import { type RouteConfig, index, layout, prefix, route } from "@react-router/dev/routes";
 
 export default [
     // base requirements
@@ -13,9 +13,14 @@ export default [
 
         layout("pages/auth/AuthGuardLayout.tsx", [
             // auth guarded stuff
-
             layout("pages/dashboard/DashboardLayout.tsx", [
-                route("dashboard", "routes/dashboard/home.tsx")
+                ...prefix("dashboard", [
+                    index("routes/dashboard/home.tsx"),
+                    ...prefix("users", [
+                        index("routes/dashboard/users.tsx"),
+                        route(":id", "routes/dashboard/user/id.tsx")
+                    ])
+                ]),
             ])
         ])
     ])

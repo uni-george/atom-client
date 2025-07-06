@@ -2,7 +2,7 @@ import { Box, Divider, GlobalStyles, List, ListItem, ListItemButton, listItemBut
 import { type ReactNode } from "react";
 import { ModeSwitcher } from "../ModeSwitcher/ModeSwitcher";
 import { AtomLogo } from "../branding/AtomLogo/AtomLogo";
-import { GroupRounded, HomeRounded } from "@mui/icons-material";
+import { DashboardRounded, FolderRounded, GroupRounded, GroupsRounded, HomeRounded, ImageRounded } from "@mui/icons-material";
 import { SidebarProfile } from "./SidebarProfile";
 import useDashboardNavigation from "../../util/useDashboardNavigation";
 import { DashboardSidebarTabs } from "../../../types/dashboardSidebar";
@@ -30,9 +30,45 @@ export function toggleSidebar() {
     }
 }
 
+type SidebarLink = {
+    text: string;
+    link?: string;
+    tab: DashboardSidebarTabs;
+    icon?: ReactNode;
+}
+
 export const DashboardSidebar = (): ReactNode => {
     const { navigationContext } = useDashboardNavigation();
     const navigate = useNavigate();
+
+    const tabs: SidebarLink[] = [
+        {
+            text: "home",
+            link: "/dashboard",
+            tab: DashboardSidebarTabs.home,
+            icon: <HomeRounded />
+        },
+        {
+            text: "users",
+            tab: DashboardSidebarTabs.users,
+            icon: <GroupRounded />
+        },
+        {
+            text: "groups",
+            tab: DashboardSidebarTabs.userGroups,
+            icon: <GroupsRounded />
+        },
+        {
+            text: "images",
+            tab: DashboardSidebarTabs.images,
+            icon: <ImageRounded />
+        },
+        {
+            text: "files",
+            tab: DashboardSidebarTabs.files,
+            icon: <FolderRounded />
+        }
+    ];
 
     return (
         <Sheet
@@ -121,41 +157,27 @@ export const DashboardSidebar = (): ReactNode => {
                         "--ListItem-radius": theme => theme.vars.radius.sm
                     }}
                 >
-                    <ListItem>
-                        <ListItemButton 
-                            selected={navigationContext?.sidebarActiveTab == DashboardSidebarTabs.home}
-                            onClick={() => {
-                                navigate("/dashboard")
-                            }}
-                        >
-                            <HomeRounded />
-                            <ListItemContent>
-                                <Typography
-                                    level="title-sm"
+                    {
+                        tabs.map((x, i) => (
+                            <ListItem key={i}>
+                                <ListItemButton
+                                    selected={navigationContext?.sidebarActiveTab == x.tab}
+                                    onClick={() => {
+                                        navigate(x.link || `/dashboard/${x.text}`);
+                                    }}
                                 >
-                                    home
-                                </Typography>
-                            </ListItemContent>
-                        </ListItemButton>
-                    </ListItem>
-
-                    <ListItem>
-                        <ListItemButton
-                        selected={navigationContext?.sidebarActiveTab == DashboardSidebarTabs.users}
-                            onClick={() => {
-                                navigate("/dashboard/users")
-                            }}
-                        >
-                            <GroupRounded />
-                            <ListItemContent>
-                                <Typography
-                                    level="title-sm"
-                                >
-                                    users
-                                </Typography>
-                            </ListItemContent>
-                        </ListItemButton>
-                    </ListItem>
+                                    { x.icon || <DashboardRounded /> }
+                                    <ListItemContent>
+                                        <Typography
+                                            level="title-sm"
+                                        >
+                                            { x.text }
+                                        </Typography>
+                                    </ListItemContent>
+                                </ListItemButton>
+                            </ListItem>
+                        ))
+                    }
                 </List>
             </Box>
             <Divider />

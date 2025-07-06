@@ -6,6 +6,7 @@ export const DashboardMainContent = ({ children }: PropsWithChildren): ReactNode
         <Box
             sx={{
                 display: "flex",
+                flexGrow: 1,
                 px: {
                     xs: 2,
                     md: 6

@@ -3,6 +3,7 @@ import config from "../../config/config.json";
 import { Auth } from "./api/Auth";
 import { User } from "./api/User";
 import { Image } from "./api/Image";
+import { Permission } from "./api/Permission";
 
 class APIManager {
     /**
@@ -19,6 +20,7 @@ class APIManager {
     static auth = Auth;
     static user = User;
     static image = Image;
+    static permission = Permission;
 
     /**
      * Initialise the APIManager.

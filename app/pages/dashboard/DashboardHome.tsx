@@ -1,22 +1,9 @@
 import { Tab, TabPanel } from "@mui/joy";
 import { Fragment, type ReactNode } from "react";
 import { DashboardHeaderTabs } from "../../components/dashboard/DashboardHeaderTabs/DashboardHeaderTabs";
-import { setDashboardNavigationContext } from "../../util/setDashboardNavigationContext";
 import { DashboardMainContent } from "../../components/dashboard/DashboardMainContent/DashboardMainContent";
-import { DashboardSidebarTabs } from "../../../types/dashboardSidebar";
 
 export const DashboardHome = (): ReactNode => {
-    setDashboardNavigationContext({
-        route: [
-            {
-                name: "home",
-                href: "/dashboard"
-            }
-        ],
-        sidebarActiveTab: DashboardSidebarTabs.home,
-        title: "welcome!"
-    })
-
     return (
         <DashboardHeaderTabs
             defaultValue={0}

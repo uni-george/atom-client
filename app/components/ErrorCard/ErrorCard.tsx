@@ -1,6 +1,7 @@
-import { Card, CardContent, Sheet, Stack, Typography, type CardProps, type SheetProps } from "@mui/joy";
+import { Box, Card, CardContent, Sheet, Stack, Typography, type CardProps, type SheetProps } from "@mui/joy";
 import type { ReactNode } from "react";
 import { Small } from "../Small/Small";
+import { ReportRounded } from "@mui/icons-material";
 
 interface ErrorCardProps extends CardProps {
     title?: string;
@@ -19,14 +20,29 @@ export const ErrorCard = (props: ErrorCardProps): ReactNode => {
                 color={color || "danger"}
                 {...other}
             >
-                <CardContent>
-                    <Typography
-                        level="h2"
-                        color="danger"
+                <CardContent
+                    orientation="horizontal"
+                >
+                    <Box
+                        sx={{
+                            "--Icon-color": theme => theme.palette.danger.solidBg
+                        }}
                     >
-                        { title || "error :(" }
-                    </Typography>
-                    { children }
+                        <ReportRounded
+                            sx={{
+                                fontSize: "60px"
+                            }}
+                        />
+                    </Box>
+                    <CardContent>
+                        <Typography
+                            level="h2"
+                            color={color || "danger"}
+                        >
+                            { title || "error :(" }
+                        </Typography>
+                        { children }
+                    </CardContent>
                 </CardContent>
             </Card>
             <Small
