@@ -32,21 +32,26 @@ export const SidebarProfile = (): ReactNode => {
             <Avatar
                 variant="outlined"
                 src={image}
-                onClick={() => navigate("/dashboard/profile")}
+                onClick={() => navigate(`/dashboard/users/${encodeURIComponent(user?.id || "")}`)}
+                sx={{
+                    cursor: "pointer"
+                }}
             >
-                { user?.name?.[0]?.toString?.().toUpperCase() }
+                {user?.name?.[0]?.toString?.().toUpperCase()}
             </Avatar>
             <Box
                 sx={{
                     minWidth: 0,
-                    flex: 1
+                    flex: 1,
+                    cursor: "pointer"
                 }}
+                onClick={() => navigate(`/dashboard/users/${encodeURIComponent(user?.id || "")}`)}
             >
                 <Typography
                     level="title-sm"
                     noWrap
                 >
-                    { user?.name || <Skeleton>usernameeeee</Skeleton> }
+                    {user?.name || <Skeleton>usernameeeee</Skeleton>}
                 </Typography>
             </Box>
             <Tooltip

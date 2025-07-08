@@ -1,14 +1,17 @@
 import { useState, type ReactNode } from "react";
-import { Outlet } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 import { DashboardSidebar } from "../../components/dashboard/DashboardSidebar";
-import { Box } from "@mui/joy";
+import { Box, Button } from "@mui/joy";
 import { type DashboardNavigation, DashboardNavigationContext } from "../../context/DashboardNavigationContext";
 import { DashboardHeader } from "../../components/dashboard/DashboardHeader";
 import { DashboardSidebarTabs } from "../../../types/dashboardSidebar";
 import { GlobalPermissionCheck } from "./GlobalPermissionCheck";
 import { GlobalPermissions } from "../../managers/api/Permission";
+import { LogoutRounded } from "@mui/icons-material";
+import AuthManager from "../../managers/AuthManager";
 
 export default function DashboardLayout(): ReactNode {
+    const navigate = useNavigate();
     const [navigationContext, setNavigationContext] = useState<DashboardNavigation|undefined>({
         route: [
             {
@@ -35,6 +38,26 @@ export default function DashboardLayout(): ReactNode {
                 permissions={[
                     GlobalPermissions.AccessDashboard
                 ]}
+                end={
+                    <Button
+                        variant="outlined"
+                        color="neutral"
+                        endDecorator={
+                            <LogoutRounded />
+                        }
+                        sx={{
+                            mt: 4,
+                            color: "text.tertiary"
+                        }}
+                        onClick={() => {
+                            AuthManager.logout().then(x => {
+                                if (x) navigate("/");
+                            });
+                        }}
+                    >
+                        log out
+                    </Button>
+                }
             >
                 <DashboardNavigationContext
                     value={{

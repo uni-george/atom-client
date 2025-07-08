@@ -1,7 +1,7 @@
 import { useEffect, useState, type PropsWithChildren, type ReactNode } from "react";
 import { GlobalPermissions, type GlobalPermissionsObject } from "../../managers/api/Permission";
 import APIManager from "../../managers/APIManager";
-import { LinearProgress, Sheet, Stack, Typography } from "@mui/joy";
+import { LinearProgress, Sheet, Stack, Typography, type TypographySystem } from "@mui/joy";
 import { ErrorCard } from "../../components/ErrorCard/ErrorCard";
 import { useNavigate } from "react-router";
 
@@ -9,9 +9,14 @@ interface GlobalPermissionCheckProps {
     permissions: GlobalPermissions[];
     centerVertically?: boolean;
     redirect?: string;
+    start?: ReactNode;
+    end?: ReactNode;
+    code?: string;
+    message?: string;
+    messageLevel?: "inherit" | keyof TypographySystem;
 }
 
-export const GlobalPermissionCheck = ({ permissions, centerVertically, redirect: redirectURL, children }: PropsWithChildren<GlobalPermissionCheckProps>): ReactNode => {
+export const GlobalPermissionCheck = ({ permissions, centerVertically, start, end, message, messageLevel, redirect: redirectURL, children }: PropsWithChildren<GlobalPermissionCheckProps>): ReactNode => {
     const [apiPermissions, setAPIPermissions] = useState<GlobalPermissionsObject|undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(true);
     const [passed, setPassed] = useState<boolean>(false);
@@ -52,24 +57,26 @@ export const GlobalPermissionCheck = ({ permissions, centerVertically, redirect:
                     loading ? 
                     <LoadingBox />
                     :
-                    <ErrorCard
-                        title="no access"
-                        sx={{
-                            maxWidth: "400px"
-                        }}
-                        code="ERR_INSUFFICIENT_PERMISSION"
-                    >
-                        <Typography>
-                            apologies, but you don't have the sufficient permissions to access this feature. if you think this is a mistake, please contact an administrator.
-                        </Typography>
-                    </ErrorCard>
+                    <Stack>
+                        { start || null }
+                        <ErrorCard
+                            title="no access"
+                            sx={{
+                                maxWidth: "400px"
+                            }}
+                            code="ERR_INSUFFICIENT_PERMISSION"
+                        >
+                            <Typography
+                                level={messageLevel || "body-md"}
+                            >
+                                { message || "apologies, but you don't have the sufficient permissions to access this feature. if you think this is a mistake, please contact an administrator." }
+                            </Typography>
+                        </ErrorCard>
+                        { end || null }
+                    </Stack>
                 }
             </Stack>
         );
-    }
-
-    if (!passed) {
-
     }
 
     return children;

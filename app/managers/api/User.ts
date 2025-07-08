@@ -77,4 +77,27 @@ export class User {
             return undefined;
         }
     }
+
+    /**
+     * Get the total number of users that match search parameters.
+     * @param params The search parameters.
+     * @returns The number of users that match the search parameters.
+     */
+    static async count(params: UserSearchParams = {}): Promise<number | undefined> {
+        try {
+            let res = await APIManager.request({
+                method: "get",
+                url: "/user/count",
+                params: {
+                    group: params.group,
+                    name: params.name
+                }
+            });
+
+            if (res) return res.data.count as number;
+            else return undefined;
+        } catch {
+            return undefined;
+        }
+    }
 }

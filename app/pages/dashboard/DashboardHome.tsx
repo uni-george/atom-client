@@ -1,50 +1,31 @@
-import { Tab, TabPanel } from "@mui/joy";
-import { Fragment, type ReactNode } from "react";
-import { DashboardHeaderTabs } from "../../components/dashboard/DashboardHeaderTabs/DashboardHeaderTabs";
+import { Divider, Grid } from "@mui/joy";
+import { type ReactNode } from "react";
 import { DashboardMainContent } from "../../components/dashboard/DashboardMainContent/DashboardMainContent";
+import { UsersCard } from "../../components/dashboard/home/UsersCard";
+import { GlobalPermissionCheck } from "./GlobalPermissionCheck";
+import { GlobalPermissions } from "../../managers/api/Permission";
 
 export const DashboardHome = (): ReactNode => {
+       
     return (
-        <DashboardHeaderTabs
-            defaultValue={0}
-            tabListContent={
-                <>
-                    <Tab value={0} indicatorInset>test</Tab>
-                    <Tab value={1} indicatorInset>other</Tab>
-                </>
-            }
-        >
+        <>
+            <Divider />
             <DashboardMainContent>
-                <TabPanel value={0}>
-                    wow this is the first set of content
-                    <br />
-
-                    {
-                        [...Array(100)].map((_x, i) => (
-                            <Fragment key={i}>
-                                {"wow no tabs"}
-                                <br />
-                            </Fragment>
-                        ))
-                    }
-                </TabPanel>
-                <TabPanel value={1}>
-                    wow this is the second set of content
-                </TabPanel>
+                <Grid
+                    spacing={3}
+                >
+                    <Grid>
+                        <GlobalPermissionCheck
+                            permissions={[
+                                GlobalPermissions.ManageUsers
+                            ]}
+                            message="you need the ability to manage users to see this."
+                        >
+                            <UsersCard />
+                        </GlobalPermissionCheck>
+                    </Grid>
+                </Grid>
             </DashboardMainContent>
-        </DashboardHeaderTabs>
-        // <>
-        //     <Divider />
-        //     <DashboardMainContent>
-        //         {
-        //             [...Array(100)].map((_x, i) => (
-        //                 <Fragment key={i}>
-        //                     {"wow no tabs"}
-        //                     <br />
-        //                 </Fragment>
-        //             ))
-        //         }
-        //     </DashboardMainContent>
-        // </>
+        </>
     );
 }

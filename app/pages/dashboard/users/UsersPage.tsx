@@ -12,11 +12,12 @@ export const UsersPage = (): ReactNode => {
     const [nameSearch, setNameSearch] = useState<string | undefined>(undefined);
     const [numPerPage, setNumPerPage] = useState<number>(10);
     const [searchParams, setSearchParams] = useSearchParams();
+    const [userPage, setUserPage] = useState<number>(1);
 
     useEffect(() => {
         if (searchParams.get("limit")) {
             if (validator.isInt(searchParams.get("limit") || "")) {
-                setNumPerPage(parseInt(searchParams.get("limit") || ""));
+                setNumPerPage(parseInt(searchParams.get("limit") || "") || 0);
             }
         }
 
@@ -106,6 +107,8 @@ export const UsersPage = (): ReactNode => {
                         <AllUserTable
                             nameSearch={nameSearch}
                             limit={numPerPage}
+                            page={userPage}
+                            setPage={setUserPage}
                         />
                     </Box>
                 </GlobalPermissionCheck>
