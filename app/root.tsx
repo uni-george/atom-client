@@ -6,6 +6,13 @@ import { RootNode } from "./components/RootNode/RootNode";
 import { ErrorCatchAllHTTPPage } from "./pages/error/ErrorCatchAllHTTPPage";
 import { ErrorCatchAllReactPage } from "./pages/error/ErrorCatchAllReactPage";
 
+// @ts-expect-error
+import "@fontsource-variable/outfit";
+// @ts-expect-error
+import "@fontsource/ibm-plex-mono";
+// @ts-expect-error
+import "@fontsource-variable/funnel-sans";
+
 export default function App() {
     return <Outlet />
 }

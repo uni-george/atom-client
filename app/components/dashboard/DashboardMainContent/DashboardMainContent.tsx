@@ -11,7 +11,7 @@ export const DashboardMainContent = ({ children }: PropsWithChildren): ReactNode
                     xs: 2,
                     md: 6
                 },
-                py: {
+                pt: {
                     xs: 2,
                     md: 3
                 }

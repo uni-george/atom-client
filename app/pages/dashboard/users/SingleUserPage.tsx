@@ -1,12 +1,13 @@
-import { useEffect, useState, type PropsWithChildren, type ReactNode } from "react";
+import React, { useContext, useEffect, useState, type ReactNode } from "react";
 import type { User } from "../../../../types/user";
 import { DashboardHeaderTabs } from "../../../components/dashboard/DashboardHeaderTabs/DashboardHeaderTabs";
-import { Avatar, Box, Card, Divider, Link, Stack, Tab, TabPanel, Typography } from "@mui/joy";
+import { Avatar, Box, Button, Card, CardActions, Divider, FormControl, FormHelperText, FormLabel, Input, LinearProgress, Link, Stack, Tab, TabPanel, Typography } from "@mui/joy";
 import { DashboardMainContent } from "../../../components/dashboard/DashboardMainContent/DashboardMainContent";
 import { ErrorCard } from "../../../components/ErrorCard/ErrorCard";
 import { useNavigate } from "react-router";
 import { ArrowBackRounded } from "@mui/icons-material";
 import APIManager from "../../../managers/APIManager";
+import { AuthGuardUserContext } from "../../../context/AuthGuardUserContext";
 
 interface SingleUserPageProps {
     user?: User;
@@ -14,15 +15,8 @@ interface SingleUserPageProps {
     isManager: boolean;
 }
 
-interface OuterBitProps {
-    groups: ReactNode;
-    permissions: ReactNode;
-}
-
 export const SingleUserPage = ({ user, canEdit, isManager }: SingleUserPageProps): ReactNode => {
     const navigate = useNavigate();
-
-    const [currentAvatar, setCurrentAvatar] = useState<string|undefined>(undefined);
 
     if (!user) {
         return (
@@ -62,67 +56,160 @@ export const SingleUserPage = ({ user, canEdit, isManager }: SingleUserPageProps
         );
     }
 
-    useEffect(() => {
-        APIManager.image.getURL(user.avatarID || "").then(x => {
-            setCurrentAvatar(x);
-        });
-    }, [user]);
-
-    const OuterBit = ({ children, groups, permissions }: PropsWithChildren<OuterBitProps>): ReactNode => {
-        if (isManager) {
-            return (
-                <DashboardHeaderTabs
-                    defaultValue={0}
-                    tabListContent={
-                        <>
-                            <Tab value={0} indicatorInset>profile</Tab>
-                            <Tab value={1} indicatorInset>groups</Tab>
-                            <Tab value={2} indicatorInset>permissions</Tab>
-                        </>
-                    }
-                >
-                    <DashboardMainContent>
-                        <TabPanel
-                            value={0}
-                        >
-                            { children }
-                        </TabPanel>
-                        <TabPanel
-                            value={1}
-                        >
-                            { groups }
-                        </TabPanel>
-                        <TabPanel
-                            value={2}
-                        >
-                            { permissions }
-                        </TabPanel>
-                    </DashboardMainContent>
-                </DashboardHeaderTabs>
-            );
-        }
-
+    if (isManager) {
         return (
-            <>
-                <Divider />
+            <DashboardHeaderTabs
+                defaultValue={0}
+                tabListContent={[
+                    <Tab value={0} indicatorInset>profile</Tab>,
+                    <Tab value={1} indicatorInset>groups</Tab>,
+                    <Tab value={2} indicatorInset>permissions</Tab>,
+                ]}
+            >
                 <DashboardMainContent>
-                    { children }
+                    <TabPanel
+                        value={0}
+                    >
+                        <ProfileTab
+                            canEdit={canEdit}
+                            user={user}
+                        />
+                    </TabPanel>
+                    <TabPanel
+                        value={1}
+                    >
+                        <h1>group stuff</h1>
+                    </TabPanel>
+                    <TabPanel
+                        value={2}
+                    >
+                        <h1>permission stuff</h1>
+                    </TabPanel>
                 </DashboardMainContent>
-            </>
+            </DashboardHeaderTabs>
         );
     }
 
     return (
-        <OuterBit
-            groups={
-                <h1>group stuff here</h1>
-            }
-            permissions={
-                <h1>permission stuff here</h1>
-            }
+        <>
+            <Divider />
+            <DashboardMainContent>
+                <ProfileTab
+                    canEdit={canEdit}
+                    user={user}
+                />
+            </DashboardMainContent>
+        </>
+    );
+}
+
+interface ProfileTabProps {
+    user: User,
+    canEdit: boolean
+}
+
+const ProfileTab = ({ user, canEdit }: ProfileTabProps): ReactNode => {
+    const [avatarID, setAvatarID] = useState<string | undefined>(user?.avatarID);
+    const [name, setName] = useState<string>(user?.name || "unnamed user");
+
+    return (
+        <Stack
+            gap={2}
         >
-            <Card>
-                <Box>
+            <DisplayInfo
+                user={user}
+                canEdit={canEdit}
+                name={name}
+                setName={setName}
+                avatarID={avatarID}
+                setAvatarID={setAvatarID}
+            />
+        </Stack>
+    );
+}
+
+interface DisplayInfoProps {
+    user: User;
+    canEdit: boolean;
+    name: string;
+    setName: React.Dispatch<React.SetStateAction<string>>;
+    avatarID: string|undefined;
+    setAvatarID: React.Dispatch<React.SetStateAction<string|undefined>>;
+}
+
+const DisplayInfo = ({ user, canEdit, name, setName, avatarID, setAvatarID }: DisplayInfoProps): ReactNode => {
+    const [currentAvatar, setCurrentAvatar] = useState<string | undefined>(undefined);
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [submitError, setSubmitError] = useState<string|undefined>(undefined);
+
+    useEffect(() => {
+        APIManager.image.getURL(user.avatarID || "").then(x => {
+            setCurrentAvatar(x);
+        });
+    }, [avatarID]);
+
+    const submit = () => {
+        setIsSubmitting(true);
+    }
+
+    const reqUser = useContext(AuthGuardUserContext);
+    const isMe = user.id == reqUser?.id;
+
+    const displayInfoModificationMade = (): boolean => {
+        return canEdit && (name != user.name || avatarID != user.avatarID);
+    }
+
+    const resetDisplayInfo = () => {
+        setName(user.name);
+        setAvatarID(user.avatarID);
+    }
+
+    const elementOpacity = isSubmitting ? 0.7 : 1;
+
+    return (
+        <form
+            onSubmit={e => {
+                e.preventDefault();
+                submit();
+            }}
+        >
+            <Card
+                sx={{
+                    width: 1,
+                    position: "relative",
+                    overflow: "hidden",
+                }}
+            >
+                {
+                    isSubmitting &&
+                    <Stack
+                        justifyContent="center"
+                        alignItems="center"
+                        sx={{
+                            position: "absolute",
+                            width: 1,
+                            height: 1,
+                            top: 0,
+                            left: 0,
+                            zIndex: 999,
+                            bgcolor: "background.backdrop",
+                            backgroundClip: "padding-box",
+                            p: 1
+                        }}
+                    >
+                        <LinearProgress
+                            sx={{
+                                width: 0.8,
+                                flexGrow: "inherit"
+                            }}
+                        />
+                    </Stack>
+                }
+                <Box
+                    sx={{
+                        opacity: elementOpacity
+                    }}
+                >
                     <Typography
                         level="title-md"
                     >
@@ -131,7 +218,7 @@ export const SingleUserPage = ({ user, canEdit, isManager }: SingleUserPageProps
                     <Typography
                         level="body-sm"
                     >
-                        customise how you appear to other atom users.
+                        {canEdit ? "customise" : null} how {isMe ? "you" : "the user will"} appear to other atom users.
                     </Typography>
                 </Box>
                 <Divider
@@ -139,25 +226,77 @@ export const SingleUserPage = ({ user, canEdit, isManager }: SingleUserPageProps
                         my: 1
                     }}
                 />
-                <Stack>
-                    <Avatar
-                        src={currentAvatar}
-                        sx={{
-                            width: 128,
-                            aspectRatio: "1",
-                            height: "auto"
+                <Stack
+                    sx={{
+                        opacity: elementOpacity
+                    }}
+                >
+                    <Stack
+                        direction={{
+                            xs: "column",
+                            sm: "row"
                         }}
+                        alignItems="center"
+                        gap={2}
                     >
-                        <Box
+                        <Avatar
+                            src={currentAvatar}
                             sx={{
-                                scale: 128 / 32
+                                width: 128,
+                                aspectRatio: "1",
+                                height: "auto"
                             }}
                         >
-                            {user.name.slice(0, 1)?.toUpperCase()}
-                        </Box>
-                    </Avatar>
+                            <Box
+                                sx={{
+                                    scale: 128 / 32
+                                }}
+                            >
+                                {user.name.slice(0, 1)?.toUpperCase()}
+                            </Box>
+                        </Avatar>
+                        <FormControl>
+                            <FormLabel>display name</FormLabel>
+                            <Input
+                                value={name}
+                                onChange={e => {
+                                    setName(e.target.value)
+                                }}
+                                name="displayName"
+                            />
+                            <FormHelperText>this name is shown to other logged-in users</FormHelperText>
+                        </FormControl>
+                    </Stack>
                 </Stack>
+
+                <Divider
+                    sx={{
+                        my: 1
+                    }}
+                />
+                <CardActions
+                    buttonFlex="0 1 120px"
+                    sx={{
+                        justifyContent: "end",
+                        opacity: elementOpacity
+                    }}
+                >
+                    <Button
+                        variant="outlined"
+                        color="neutral"
+                        disabled={!displayInfoModificationMade()}
+                        onClick={resetDisplayInfo}
+                    >
+                        cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        disabled={!displayInfoModificationMade()}
+                    >
+                        save
+                    </Button>
+                </CardActions>
             </Card>
-        </OuterBit>
+        </form>
     );
 }

@@ -62,6 +62,7 @@ export const AllUserTable = ({ nameSearch, limit, page = 1, setPage }: AllUserTa
     }, 500, { leading: false });
 
     useEffect(() => {
+        setLoading(true);
         loadUsers();
     }, [nameSearch, limit, page]);
 

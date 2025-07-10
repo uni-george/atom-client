@@ -2,7 +2,7 @@ import { tabClasses, TabList, tabPanelClasses, Tabs, type TabsProps } from "@mui
 import type { ReactNode } from "react";
 
 interface DashboardHeaderTabsProps extends TabsProps {
-    tabListContent: ReactNode;
+    tabListContent: ReactNode[];
 }
 
 export const DashboardHeaderTabs = ({ children, tabListContent, ...other }: DashboardHeaderTabsProps): ReactNode => {

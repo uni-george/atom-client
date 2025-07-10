@@ -1,6 +1,7 @@
 @layer atom {
     html, body, #root {
         min-height: 100vh;
+        font-family: 'Funnel Sans Variable';
     }
 
     code, pre {
