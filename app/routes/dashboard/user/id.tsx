@@ -35,7 +35,6 @@ export default function ID({ loaderData, params }: Route.ComponentProps): ReactN
 
     useEffect(() => {
         APIManager.permission.me().then(x => {
-            console.log(x)
             if (x) {
                 if (x[GlobalPermissions.EditProfile] || x[GlobalPermissions.ManageUsers]) {
                     if (x[GlobalPermissions.ManageUsers]) {

@@ -25,7 +25,7 @@ export default function BaseLayout({ children }: PropsWithChildren): ReactNode {
         return (
             <AuthPageStyle>
                 <ErrorCard
-                    title="no server connection :("
+                    title="no server connection"
                     code="ERR_NO_API"
                 >
                     <Typography

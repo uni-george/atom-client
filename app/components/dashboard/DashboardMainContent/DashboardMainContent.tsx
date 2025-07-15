@@ -16,6 +16,7 @@ export const DashboardMainContent = ({ children }: PropsWithChildren): ReactNode
                     md: 3
                 }
             }}
+            maxWidth={1}
         >
             { children }
         </Box>

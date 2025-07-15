@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState, type ReactNode } from "react";
 import type { User } from "../../../../types/user";
 import { DashboardHeaderTabs } from "../../../components/dashboard/DashboardHeaderTabs/DashboardHeaderTabs";
-import { Avatar, Box, Button, Card, CardActions, Divider, FormControl, FormHelperText, FormLabel, Input, LinearProgress, Link, Stack, Tab, TabPanel, Typography } from "@mui/joy";
+import { Avatar, Box, Button, Card, CardActions, Divider, FormControl, FormHelperText, FormLabel, Input, LinearProgress, Link, Stack, Tab, TabPanel, textareaClasses, Typography } from "@mui/joy";
 import { DashboardMainContent } from "../../../components/dashboard/DashboardMainContent/DashboardMainContent";
 import { ErrorCard } from "../../../components/ErrorCard/ErrorCard";
 import { useNavigate } from "react-router";
-import { ArrowBackRounded } from "@mui/icons-material";
+import { ArrowBackRounded, EditRounded } from "@mui/icons-material";
 import APIManager from "../../../managers/APIManager";
 import { AuthGuardUserContext } from "../../../context/AuthGuardUserContext";
+import { ImageSearchModal } from "../images/ImageSearchModal/ImageSearchModal";
 
 interface SingleUserPageProps {
     user?: User;
@@ -115,6 +116,7 @@ const ProfileTab = ({ user, canEdit }: ProfileTabProps): ReactNode => {
     return (
         <Stack
             gap={2}
+            maxWidth={1}
         >
             <DisplayInfo
                 user={user}
@@ -138,13 +140,17 @@ interface DisplayInfoProps {
 }
 
 const DisplayInfo = ({ user, canEdit, name, setName, avatarID, setAvatarID }: DisplayInfoProps): ReactNode => {
-    const [currentAvatar, setCurrentAvatar] = useState<string | undefined>(undefined);
+    const [currentAvatar, setCurrentAvatar] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [submitError, setSubmitError] = useState<string|undefined>(undefined);
 
+    const [avatarChooseModalOpen, setAvatarChooseModalOpen] = useState<boolean>(false);
+
     useEffect(() => {
-        APIManager.image.getURL(user.avatarID || "").then(x => {
-            setCurrentAvatar(x);
+        console.log("hereeeeeee")
+        APIManager.image.getURL(avatarID || "").then(x => {
+            console.log(x);
+            setCurrentAvatar(x || "");
         });
     }, [avatarID]);
 
@@ -173,6 +179,14 @@ const DisplayInfo = ({ user, canEdit, name, setName, avatarID, setAvatarID }: Di
                 submit();
             }}
         >
+            <ImageSearchModal 
+                open={avatarChooseModalOpen}
+                image={avatarID || ""}
+                setImage={setAvatarID}
+                onClose={() => {
+                    setAvatarChooseModalOpen(false);
+                }}
+            />
             <Card
                 sx={{
                     width: 1,
@@ -230,72 +244,148 @@ const DisplayInfo = ({ user, canEdit, name, setName, avatarID, setAvatarID }: Di
                     sx={{
                         opacity: elementOpacity
                     }}
+                    maxWidth={1}
                 >
                     <Stack
                         direction={{
                             xs: "column",
                             sm: "row"
                         }}
+                        maxWidth={1}
                         alignItems="center"
                         gap={2}
                     >
-                        <Avatar
-                            src={currentAvatar}
+                        <Box
                             sx={{
-                                width: 128,
-                                aspectRatio: "1",
-                                height: "auto"
+                                position: "relative"
                             }}
                         >
-                            <Box
+                            <Avatar
+                                src={currentAvatar}
                                 sx={{
-                                    scale: 128 / 32
+                                    width: 128,
+                                    aspectRatio: "1",
+                                    height: "auto"
                                 }}
                             >
-                                {user.name.slice(0, 1)?.toUpperCase()}
-                            </Box>
-                        </Avatar>
+                                <Box
+                                    sx={{
+                                        scale: 128 / 32
+                                    }}
+                                >
+                                    {user.name.slice(0, 1)?.toUpperCase()}
+                                </Box>
+                            </Avatar>
+                            {
+                                canEdit &&
+                                <Box
+                                    sx={{
+                                        position: "absolute",
+                                        bottom: "1%",
+                                        right: "1%",
+                                        bgcolor: "text.primary",
+                                        padding: 0.5,
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        border: "5px solid",
+                                        borderColor: "background.surface",
+                                        borderRadius: "50%",
+                                        cursor: "pointer",
+                                        "&& > *": {
+                                            color: "background.body"
+                                        },
+                                        "&:hover": {
+                                            bgcolor: "text.secondary"
+                                        }
+                                    }}
+                                    onClick={() => {
+                                        setAvatarChooseModalOpen(true);
+                                    }}
+                                >
+                                    <EditRounded
+                                        sx={{
+                                            fontSize: 24
+                                        }}
+                                    />
+                                </Box>
+                            }
+                        </Box>
                         <FormControl>
                             <FormLabel>display name</FormLabel>
-                            <Input
-                                value={name}
-                                onChange={e => {
-                                    setName(e.target.value)
-                                }}
-                                name="displayName"
-                            />
+                            {
+                                canEdit ?
+                                    <Input
+                                        value={name}
+                                        onChange={e => {
+                                            setName(e.target.value)
+                                        }}
+                                        name="displayName"
+                                    />
+                                :
+                                    <Box
+                                        sx={{
+                                            width: {
+                                                xs: 1,
+                                                sm: "calc(100% - 16px - 128px)"
+                                            }
+                                        }}
+                                    >
+                                        <Typography
+                                            level="body-lg"
+                                            noWrap
+                                        >
+                                            {name}
+                                        </Typography>
+                                    </Box>
+                            }
                             <FormHelperText>this name is shown to other logged-in users</FormHelperText>
                         </FormControl>
                     </Stack>
                 </Stack>
+                {
+                    submitError &&
+                    <Typography
+                        level="body-sm"
+                        color="danger"
+                    >
+                        couldn't submit display info: { submitError }
+                    </Typography>
+                }
 
-                <Divider
-                    sx={{
-                        my: 1
-                    }}
-                />
-                <CardActions
-                    buttonFlex="0 1 120px"
-                    sx={{
-                        justifyContent: "end",
-                        opacity: elementOpacity
-                    }}
-                >
-                    <Button
-                        variant="outlined"
-                        color="neutral"
-                        disabled={!displayInfoModificationMade()}
-                        onClick={resetDisplayInfo}
+                {
+                    canEdit &&
+                    <Divider
+                        sx={{
+                            my: 1
+                        }}
+                    />
+                }
+                {
+                    canEdit &&
+                    <CardActions
+                        buttonFlex="0 1 120px"
+                        sx={{
+                            justifyContent: "end",
+                            opacity: elementOpacity
+                        }}
                     >
-                        cancel
-                    </Button>
-                    <Button
-                        type="submit"
-                        disabled={!displayInfoModificationMade()}
-                    >
-                        save
-                    </Button>
-                </CardActions>
+                        <Button
+                            variant="outlined"
+                            color="neutral"
+                            disabled={!displayInfoModificationMade()}
+                            onClick={resetDisplayInfo}
+                        >
+                            cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={!displayInfoModificationMade()}
+                        >
+                            save
+                        </Button>
+                    </CardActions>
+                }
             </Card>
         </form>
     );

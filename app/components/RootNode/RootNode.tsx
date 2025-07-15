@@ -18,8 +18,7 @@ export const RootNode = ({ children }: PropsWithChildren): ReactNode => {
             disableNestedContext
             defaultMode="dark"
         >
-            <CssBaseline  />
-
+            <CssBaseline />
             { children }
         </CssVarsProvider>
     );

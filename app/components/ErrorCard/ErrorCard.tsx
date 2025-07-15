@@ -25,7 +25,7 @@ export const ErrorCard = (props: ErrorCardProps): ReactNode => {
                 >
                     <Box
                         sx={{
-                            "--Icon-color": theme => theme.palette.danger.solidBg
+                            "--Icon-color": theme => theme.palette[color || "danger"].solidBg
                         }}
                     >
                         <ReportRounded

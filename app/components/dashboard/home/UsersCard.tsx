@@ -20,6 +20,7 @@ export const UsersCard = (): ReactNode => {
             sx={{
                 px: 4
             }}
+            invertedColors
         >
             <CardContent
                 orientation="horizontal"
