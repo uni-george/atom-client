@@ -17,21 +17,35 @@ export function meta({ }: Route.MetaArgs) {
     return getDefaultMeta("user - atom")
 }
 
-export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-    let user: User|undefined;
-
-    user = await APIManager.user.get(params.id);
-
-    return {
-        user
-    }
-}
-
-export default function ID({ loaderData, params }: Route.ComponentProps): ReactNode {
+export default function ID({ params }: Route.ComponentProps): ReactNode {
     const user = useContext(AuthGuardUserContext);
     const [canEdit, setCanEdit] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
     const [isManager, setIsManager] = useState<boolean>(false);
+    const [idUser, setIDUser] = useState<User|undefined>(undefined);
+    const [refreshUser, setRefreshUser] = useState<boolean>(true);
+
+    useEffect(() => {
+        (async () => {
+            setIDUser(await APIManager.user.get(params.id));
+        })();
+    }, [user, params.id, refreshUser]);
+
+
+    setDashboardNavigationContext({
+        route: [
+            {
+                name: "users",
+                href: "/dashboard/users"
+            },
+            {
+                name: idUser?.name || "unknown user",
+                href: `/dashboard/users/${encodeURIComponent(params.id)}`
+            }
+        ],
+        sidebarActiveTab: DashboardSidebarTabs.users,
+        title: idUser?.name || "unknown user"
+    }, [idUser]);
 
     useEffect(() => {
         APIManager.permission.me().then(x => {
@@ -50,22 +64,7 @@ export default function ID({ loaderData, params }: Route.ComponentProps): ReactN
         })
     });
 
-    setDashboardNavigationContext({
-        route: [
-            {
-                name: "users",
-                href: "/dashboard/users"
-            },
-            {
-                name: loaderData.user?.name || "unknown user",
-                href: `/dashboard/users/${encodeURIComponent(params.id)}`
-            }
-        ],
-        sidebarActiveTab: DashboardSidebarTabs.users,
-        title: loaderData.user?.name || "unknown user"
-    });
-
-    let own = loaderData.user?.id && user?.id === loaderData.user.id;
+    let own = idUser?.id && user?.id === idUser.id;
 
     if (loading) {
         return (
@@ -91,9 +90,11 @@ export default function ID({ loaderData, params }: Route.ComponentProps): ReactN
             ] : []}
         >
             <SingleUserPage
-                user={loaderData.user}
+                user={idUser}
                 canEdit={canEdit}
                 isManager={isManager}
+                refreshUser={refreshUser}
+                setRefreshUser={setRefreshUser}
             />
         </GlobalPermissionCheck>
     );

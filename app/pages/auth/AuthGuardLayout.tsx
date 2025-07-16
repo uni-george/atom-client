@@ -3,7 +3,7 @@ import type { User } from "../../../types/user";
 import { Outlet, useNavigate } from "react-router";
 import APIManager from "../../managers/APIManager";
 import { RootLoading } from "../RootLoading";
-import { AuthGuardUserContext } from "../../context/AuthGuardUserContext";
+import { AuthGuardUserContext, SetAuthGuardUserContext } from "../../context/AuthGuardUserContext";
 
 export default function AuthGuardLayout(): ReactNode {
     const [user, setUser] = useState<User|undefined>(undefined);
@@ -14,6 +14,9 @@ export default function AuthGuardLayout(): ReactNode {
         APIManager.user.me().then(x => {
             setUser(x);
             setLoading(false);
+            if (!x) {
+                navigate("/login");
+            }
         });
     }, []);
 
@@ -27,15 +30,15 @@ export default function AuthGuardLayout(): ReactNode {
         )
     }
 
-    if (!user) {
-        navigate("/login");
-    }
-
     return (
         <AuthGuardUserContext
             value={user}
         >
-            <Outlet />
+            <SetAuthGuardUserContext
+                value={setUser}
+            >
+                <Outlet />
+            </SetAuthGuardUserContext>
         </AuthGuardUserContext>
     );
 }

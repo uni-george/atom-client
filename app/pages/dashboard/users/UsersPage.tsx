@@ -45,7 +45,7 @@ export const UsersPage = (): ReactNode => {
                         <Box
                             sx={{
                                 borderRadius: "sm",
-                                py: 2,
+                                pb: 2,
                                 display: "flex",
                                 flexWrap: "wrap",
                                 gap: 1.5,

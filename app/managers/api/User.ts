@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import type { User as UserObject } from "../../../types/user";
 import APIManager from "../APIManager";
 
@@ -48,6 +49,58 @@ export class User {
             else return undefined;
         } catch {
             return undefined;
+        }
+    }
+
+    /**
+     * Update a user's details.
+     * @param user The updated user details.
+     * @returns The updated user object.
+     */
+    static async update(user: UserObject): Promise<UserObject|undefined> {
+        try {
+            let res = await APIManager.request({
+                method: "patch",
+                url: `/user/${user.id}`,
+                data: {
+                    name: user.name,
+                    avatarID: user.avatarID
+                }
+            });
+
+            if (!res) return undefined;
+            return res.data as UserObject;
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                if (e.status && e.status >= 400 && e.status < 500) {
+                    throw e.response?.data;
+                }
+            }
+            return undefined;
+        }
+    }
+
+    /**
+     * Delete a user.
+     * @param id The user's ID.
+     * @returns True if successful.
+     */
+    static async delete(id: string): Promise<boolean> {
+        try {
+            let res = await APIManager.request({
+                method: "delete",
+                url: `/user/${id}`,
+            });
+
+            if (!res) return false;
+            return true;
+        } catch (e) {
+            if (e instanceof AxiosError) {
+                if (e.status && e.status >= 400 && e.status < 500) {
+                    throw e.response?.data;
+                }
+            }
+            return false;
         }
     }
 

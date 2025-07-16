@@ -7,7 +7,7 @@ export type ImageObject = {
     url?: string;
 }
 
-type ImageSearchParams = {
+export type ImageSearchParams = {
     limit?: number;
     offset?: number;
     name?: string;
@@ -32,6 +32,26 @@ export class Image {
             });
 
             return res?.request?.responseURL;
+        } catch {
+            return undefined;
+        }
+    }
+
+    static async count(params: ImageSearchParams = {}): Promise<number|undefined> {
+        try {
+            let res = await APIManager.request({
+                method: "get",
+                url: "/image/count",
+                params: {
+                    name: params.name,
+                    type: params.type,
+                    internal: params.internal,
+                    uploadedBy: params.uploadedBy
+                }
+            });
+
+            if (res) return res.data?.count || 0 as number;
+            else return undefined;
         } catch {
             return undefined;
         }

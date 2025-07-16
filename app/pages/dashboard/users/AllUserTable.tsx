@@ -1,30 +1,21 @@
-import { Avatar, Box, Button, CircularProgress, IconButton, Link, Sheet, Stack, Table, Typography } from "@mui/joy";
+import { Avatar, CircularProgress, Link, Sheet, Stack, Table, Typography } from "@mui/joy";
 import React, { useEffect, useState, type ReactNode } from "react";
 import type { User } from "../../../../types/user";
 import APIManager from "../../../managers/APIManager";
 import { type UserSearchProperties, type UserSearchSortDirection } from "../../../managers/api/User";
 import { useDebouncedCallback } from "use-debounce";
-import { ImageRounded, KeyboardArrowDownRounded, KeyboardArrowLeftRounded, KeyboardArrowRightRounded } from "@mui/icons-material";
+import { ImageRounded, KeyboardArrowDownRounded } from "@mui/icons-material";
 import { useNavigate, useSearchParams } from "react-router";
 import millify from "millify";
+import { Paginator } from "../../../components/Paginator/Paginator";
+import { noResultsKaomoji as noUsersKaomoji } from "../../../util/noResultsKaomoji";
 
-const noUsersKaomoji = [
-    "Σ(°∇°?!)",
-    "∘ ∘ ∘ ( °ヮ° ) ?",
-    "(O_O)!",
-    "(＃°Д°)",
-    "（*゜ー゜*）",
-    "(°ー°〃)",
-    "(。_。)",
-    "ㄟ( ▔, ▔ )ㄏ",
-    "(￣_￣|||)"
-];
 
 interface AllUserTableProps {
     nameSearch?: string;
     limit?: number;
     page?: number;
-    setPage?: React.Dispatch<React.SetStateAction<number>>;
+    setPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export const AllUserTable = ({ nameSearch, limit, page = 1, setPage }: AllUserTableProps): ReactNode => {
@@ -64,7 +55,7 @@ export const AllUserTable = ({ nameSearch, limit, page = 1, setPage }: AllUserTa
     useEffect(() => {
         setLoading(true);
         loadUsers();
-    }, [nameSearch, limit, page]);
+    }, [nameSearch, limit, page, sortBy, sortDirection]);
 
     useEffect(() => {
         if (!loading) {
@@ -114,7 +105,7 @@ export const AllUserTable = ({ nameSearch, limit, page = 1, setPage }: AllUserTa
                                     justifyContent="center"
                                     alignItems="center"
                                     sx={{
-                                        
+                                        height: 1,
                                         "& > svg": {
                                             color: "text.secondary"
                                         }
@@ -135,10 +126,9 @@ export const AllUserTable = ({ nameSearch, limit, page = 1, setPage }: AllUserTa
                                     onClick={() => {
                                         if (sortBy == "name") setSortDirection(sortDirection == "ascending" ? "descending" : "ascending");
                                         setSortBy("name");
-                                        loadUsers();
                                     }}
                                     endDecorator={
-                                        <KeyboardArrowDownRounded />
+                                        sortBy == "name" ? <KeyboardArrowDownRounded /> : null
                                     }
                                     sx={[
                                         {
@@ -154,8 +144,33 @@ export const AllUserTable = ({ nameSearch, limit, page = 1, setPage }: AllUserTa
                                     name
                                 </Link>
                             </th>
-                            <th>
-                                test
+                            <th
+                                style={{
+                                    padding: "12px 6px"
+                                }}
+                            >
+                                <Link
+                                    underline="none"
+                                    color="neutral"
+                                    component="button"
+                                    endDecorator={
+                                        sortBy == "id" ? <KeyboardArrowDownRounded /> : null
+                                    }
+                                    sx={{
+                                        fontWeight: "lg",
+                                        "& svg": {
+                                            transition: "0.2s",
+                                            transform: sortDirection == "descending" ? "rotate(0deg)" : "rotate(180deg)"
+                                        }
+                                    }}
+                                    textColor="text.secondary"
+                                    onClick={() => {
+                                        if (sortBy == "id") setSortDirection(sortDirection == "ascending" ? "descending" : "ascending");
+                                        setSortBy("id");
+                                    }}
+                                >
+                                    id
+                                </Link>
                             </th>
                         </tr>
                     </thead>
@@ -219,110 +234,12 @@ export const AllUserTable = ({ nameSearch, limit, page = 1, setPage }: AllUserTa
 
             {
                 !loading ?
-                <Stack
-                    direction="row"
-                    gap={1}
-                    justifyContent="space-between"
-                >
-                    <Box
-                        flexGrow={1}
-                        flexBasis={0}
-                    >
-                        <Button
-                            size="sm"
-                            variant="outlined"
-                            color="neutral"
-                            startDecorator={
-                                <KeyboardArrowLeftRounded />
-                            }
-                            onClick={() => {
-                                setPage?.(page - 1);
-                                searchParams.set("page", (page - 1).toString());
-                                setSearchParams(searchParams);
-                            }}
-                            disabled={page <= 1}
-                        >
-                            previous
-                        </Button>
-                    </Box>
-
-                    
-                    <Stack
-                        direction="row"
-                        justifyContent="center"
-                        gap={1}
-                    >
-                        {
-                            [1, "...", ...[...Array(5).keys()].map(x => x - 2).map(x => page + x).filter(x => x > 0 && x <= Math.ceil(numResults / (limit || 10))), "...", Math.ceil(numResults / (limit || 10))].filter((x, i, a) => {
-                                if (i == 0) {
-                                    if (a[i + 2] == x) return false;
-                                    return true;
-                                }
-                                if (typeof x == "string") {
-                                    if (a[i - 1] == (a[i + 1] as number - 1) || a[i - 1] == a[i + 1]) return false;
-                                    return true;
-                                }
-                                if (i == a.length - 1) {
-                                    if (a[i - 2] == x) return false;
-                                    return true;
-                                }
-                                return true;
-                            }).map(x => (
-                                <IconButton
-                                    key={x}
-                                    size="sm"
-                                    color="neutral"
-                                    variant={typeof x == "number" ? "outlined" : "plain"}
-                                    sx={{
-                                        aspectRatio: 1,
-                                        color: page == x ? "background.body" : "text.secondary",
-                                        borderRadius: "50%",
-                                        bgcolor: page == x ? "text.primary" : "transparent",
-                                        borderColor: page == x ? "text.primary" : "neutral.outlineBorder",
-                                        "&:hover": {
-                                            bgcolor: page == x ? "neutral.plainHoverColor" : "neutral.outlinedHoverColor"
-                                        },
-                                        userSelect: typeof x == "number" ? "none" : "unset"
-                                    }}
-                                    onClick={() => {
-                                        if (typeof x != "number") return;
-                                        if (!loading) {
-                                            setPage?.(x);
-                                            searchParams.set("page", x.toString());
-                                            setSearchParams(searchParams);
-                                        }
-                                    }}
-                                >
-                                    { x }
-                                </IconButton>
-                            ))
-                        }
-                    </Stack>
-                    
-                    <Box
-                        flexGrow={1}
-                        flexBasis={0}
-                        display="flex"
-                        justifyContent="end"
-                    >
-                        <Button
-                            size="sm"
-                            variant="outlined"
-                            color="neutral"
-                            endDecorator={
-                                <KeyboardArrowRightRounded />
-                            }
-                            onClick={() => {
-                                setPage?.(page + 1);
-                                searchParams.set("page", (page + 1).toString());
-                                setSearchParams(searchParams);
-                            }}
-                            disabled={page * (limit || 0) + 1 > numResults}
-                        >
-                            next
-                        </Button>
-                    </Box>
-                </Stack>
+                <Paginator
+                    page={page}
+                    setPage={setPage}
+                    numPages={Math.ceil(numResults / (limit || 10))}
+                    includeButtons
+                />
                 : null
             }
             {
@@ -357,6 +274,9 @@ const UserRow = ({ user }: UserRowProps): ReactNode => {
 
     return (
         <tr
+            style={{
+                cursor: "pointer"
+            }}
             onClick={() => {
                 navigate(user.id);
             }}
@@ -394,7 +314,14 @@ const UserRow = ({ user }: UserRowProps): ReactNode => {
                 }
             </td>
             <td>
-                ok
+                <Typography
+                    level="body-sm"
+                    textColor="text.tertiary"
+                    noWrap
+                    overflow="hidden"
+                >
+                    { user.id }
+                </Typography>
             </td>
         </tr>
     );

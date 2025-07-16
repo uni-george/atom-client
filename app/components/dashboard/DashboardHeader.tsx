@@ -104,10 +104,15 @@ export const DashboardHeader = (): ReactNode => {
                                 color="neutral"
                                 sx={{
                                     fontSize: 12,
-                                    fontWeight: 500
+                                    fontWeight: 500,
                                 }}
                             >
-                                { x.name }
+                                <Typography
+                                    noWrap
+                                    maxWidth={30}
+                                >
+                                    {x.name}
+                                </Typography>
                             </MUILink>
                         </Link>
                         :
@@ -118,6 +123,8 @@ export const DashboardHeader = (): ReactNode => {
                                 fontSize: 12,
                                 fontWeight: 500
                             }}
+                            noWrap
+                            maxWidth={300}
                         >
                             { x.name }
                         </Typography>
@@ -128,8 +135,10 @@ export const DashboardHeader = (): ReactNode => {
                     component="h1"
                     sx={{
                         mt: 1,
-                        mb: 2
+                        mb: 2,
+                        overflowWrap: "break-word"
                     }}
+
                 >
                     { navigationContext?.title }
                 </Typography>
