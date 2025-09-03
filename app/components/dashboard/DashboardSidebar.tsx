@@ -2,7 +2,7 @@ import { Box, Divider, GlobalStyles, List, ListItem, ListItemButton, listItemBut
 import { type ReactNode } from "react";
 import { ModeSwitcher } from "../ModeSwitcher/ModeSwitcher";
 import { AtomLogo } from "../branding/AtomLogo/AtomLogo";
-import { DashboardRounded, FolderRounded, GroupRounded, GroupsRounded, HomeRounded, ImageRounded } from "@mui/icons-material";
+import { ChatBubbleRounded, DashboardRounded, FolderRounded, GroupRounded, GroupsRounded, HomeRounded, ImageRounded, NoteRounded, NotesRounded, VerticalSplitRounded, ViewCarouselRounded } from "@mui/icons-material";
 import { SidebarProfile } from "./SidebarProfile";
 import useDashboardNavigation from "../../util/useDashboardNavigation";
 import { DashboardSidebarTabs } from "../../../types/dashboardSidebar";
@@ -67,6 +67,26 @@ export const DashboardSidebar = (): ReactNode => {
             text: "files",
             tab: DashboardSidebarTabs.files,
             icon: <FolderRounded />
+        },
+        {
+            text: "content",
+            tab: DashboardSidebarTabs.content,
+            icon: <ChatBubbleRounded />
+        },
+        {
+            text: "pages",
+            tab: DashboardSidebarTabs.pages,
+            icon: <NoteRounded />
+        },
+        {
+            text: "elements",
+            tab: DashboardSidebarTabs.elements,
+            icon: <ViewCarouselRounded />
+        },
+        {
+            text: "components",
+            tab: DashboardSidebarTabs.components,
+            icon: <VerticalSplitRounded />
         }
     ];
 

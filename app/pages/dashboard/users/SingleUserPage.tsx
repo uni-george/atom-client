@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
 import type { User } from "../../../../types/user";
 import { DashboardHeaderTabs } from "../../../components/dashboard/DashboardHeaderTabs/DashboardHeaderTabs";
-import { Alert, Avatar, Box, Button, Card, CardActions, CircularProgress, DialogContent, DialogTitle, Divider, FormControl, FormHelperText, FormLabel, Grid, Input, LinearProgress, Link, Modal, ModalClose, ModalDialog, Sheet, Stack, Tab, TabPanel, Typography } from "@mui/joy";
+import { Avatar, Box, Button, Card, CardActions, CircularProgress, DialogContent, DialogTitle, Divider, FormControl, FormHelperText, FormLabel, Grid, Input, LinearProgress, Link, Modal, ModalClose, ModalDialog, Sheet, Stack, Tab, TabPanel, Typography } from "@mui/joy";
 import { DashboardMainContent } from "../../../components/dashboard/DashboardMainContent/DashboardMainContent";
-import { ErrorCard, ErrorCardCode } from "../../../components/ErrorCard/ErrorCard";
+import { ErrorCard } from "../../../components/ErrorCard/ErrorCard";
 import { useNavigate } from "react-router";
 import { ArrowBackRounded, DeleteForeverRounded, EditRounded, InfoOutlineRounded } from "@mui/icons-material";
 import APIManager from "../../../managers/APIManager";

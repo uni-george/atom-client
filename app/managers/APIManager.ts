@@ -4,6 +4,7 @@ import { Auth } from "./api/Auth";
 import { User } from "./api/User";
 import { Image } from "./api/Image";
 import { Permission } from "./api/Permission";
+import { Content } from "./api/Content";
 
 class APIManager {
     /**
@@ -21,6 +22,7 @@ class APIManager {
     static user = User;
     static image = Image;
     static permission = Permission;
+    static content = Content;
 
     /**
      * Initialise the APIManager.
@@ -29,7 +31,7 @@ class APIManager {
         APIManager.#axios = axios.create({
             baseURL: config.apiLocation,
             allowAbsoluteUrls: false,
-            timeout: 5000,
+            timeout: 10000,
             headers: {
                 Accept: "application/json"
             },

@@ -8,7 +8,13 @@ export const GlobalPermissions = {
     DownloadFiles: "DOWNLOAD_FILES",
     ManageUsers: "MANAGE_USERS",
     EditProfile: "EDIT_PROFILE",
-    ViewAPIDocs: "VIEW_API_DOCS"
+    ViewAPIDocs: "VIEW_API_DOCS", 
+    CreateContent: "CREATE_CONTENT",
+    EditContent: "EDIT_CONTENT",
+    DeleteContent: "DELETE_CONTENT",
+    CreateContentFolders: "CREATE_CONTENT_FOLDERS",
+    EditContentFolders: "EDIT_CONTENT_FOLDERS",
+    DeleteContentFolders: "DELETE_CONTENT_FOLDERS"
 }
 
 export type GlobalPermissions = Enum<typeof GlobalPermissions>;
