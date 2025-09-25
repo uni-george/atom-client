@@ -14,16 +14,23 @@ export default [
         layout("pages/auth/AuthGuardLayout.tsx", [
             // auth guarded stuff
             layout("pages/dashboard/DashboardLayout.tsx", [
-                ...prefix("dashboard", [
-                    index("routes/dashboard/home.tsx"),
-                    ...prefix("users", [
-                        index("routes/dashboard/users.tsx"),
-                        route(":id", "routes/dashboard/user/id.tsx")
-                    ]),
-                    ...prefix("content", [
-                        index("routes/dashboard/content.tsx")
+                // provide self perms cache
+                layout("pages/dashboard/SelfPermissionCacheLayout.tsx", [
+                    ...prefix("dashboard", [
+                        index("routes/dashboard/home.tsx"),
+                        ...prefix("users", [
+                            index("routes/dashboard/users.tsx"),
+                            route(":id", "routes/dashboard/user/id.tsx")
+                        ]),
+                        ...prefix("content", [
+                            index("routes/dashboard/content.tsx"),
+                            ...prefix("folder", [
+                                route(":id", "routes/dashboard/content/folder.tsx")
+                            ]),
+                            route(":id", "routes/dashboard/content/item.tsx")
+                        ])
                     ])
-                ]),
+                ])
             ])
         ])
     ])

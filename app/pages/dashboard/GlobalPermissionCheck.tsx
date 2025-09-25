@@ -1,9 +1,10 @@
-import { useEffect, useState, type PropsWithChildren, type ReactNode } from "react";
+import { useContext, useEffect, useState, type PropsWithChildren, type ReactNode } from "react";
 import { GlobalPermissions, type GlobalPermissionsObject } from "../../managers/api/Permission";
 import APIManager from "../../managers/APIManager";
 import { LinearProgress, Sheet, Stack, Typography, type TypographySystem } from "@mui/joy";
 import { ErrorCard } from "../../components/ErrorCard/ErrorCard";
 import { useNavigate } from "react-router";
+import { SelfPermissionCacheContext } from "../../context/SelfPermissionCacheContext";
 
 interface GlobalPermissionCheckProps {
     permissions: GlobalPermissions[];
@@ -14,22 +15,30 @@ interface GlobalPermissionCheckProps {
     code?: string;
     message?: string;
     messageLevel?: "inherit" | keyof TypographySystem;
+    discreet?: boolean;
 }
 
-export const GlobalPermissionCheck = ({ permissions, centerVertically, start, end, message, messageLevel, redirect: redirectURL, children }: PropsWithChildren<GlobalPermissionCheckProps>): ReactNode => {
+export const GlobalPermissionCheck = ({ permissions, centerVertically, start, end, message, messageLevel, redirect: redirectURL, children, discreet = false }: PropsWithChildren<GlobalPermissionCheckProps>): ReactNode => {
     const [apiPermissions, setAPIPermissions] = useState<GlobalPermissionsObject|undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(true);
     const [passed, setPassed] = useState<boolean>(false);
     const navigate = useNavigate();
 
+    const selfPermissionCache = useContext(SelfPermissionCacheContext);
+
     useEffect(() => {
-        APIManager.permission.me().then(res => {
-            setAPIPermissions(res);
-        }).catch(() => {
-            throw new Error("Server could not be accessed.")
-        }).finally(() => {
+        if (selfPermissionCache) {
+            setAPIPermissions(selfPermissionCache);
             setLoading(false);
-        });
+        } else {
+            APIManager.permission.me().then(res => {
+                setAPIPermissions(res);
+            }).catch(() => {
+                throw new Error("Server could not be accessed.")
+            }).finally(() => {
+                setLoading(false);
+            });
+        }
     }, []);
 
     useEffect(() => {
@@ -43,6 +52,12 @@ export const GlobalPermissionCheck = ({ permissions, centerVertically, start, en
 
     if (!loading && !passed && redirectURL) {
         navigate(redirectURL);
+    }
+
+    if ((loading || !passed) && discreet) {
+        return (
+            <></>
+        )
     }
 
     if (loading || !passed) {

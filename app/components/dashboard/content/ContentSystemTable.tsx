@@ -1,11 +1,14 @@
-import { useEffect, useState, type ReactNode } from "react";
+import React, { useEffect, useState, type CSSProperties, type MouseEventHandler, type ReactNode, type TdHTMLAttributes } from "react";
 import type { ContentFolderObject, ContentObject, ContentPath } from "../../../managers/api/Content";
-import { Link, Sheet, Stack, Table, Typography } from "@mui/joy";
+import { Divider, Dropdown, IconButton, Link, Menu, MenuButton, MenuItem, Sheet, Stack, Table, Typography } from "@mui/joy";
 import { noResultsKaomoji } from "../../../util/noResultsKaomoji";
-import { CalculateRounded, FolderRounded, KeyboardArrowDownRounded, TranslateRounded } from "@mui/icons-material";
+import { CalculateRounded, FolderRounded, KeyboardArrowDownRounded, MoreHoriz, TranslateRounded } from "@mui/icons-material";
 import { useNavigate } from "react-router";
+import { GlobalPermissionCheck } from "../../../pages/dashboard/GlobalPermissionCheck";
+import { GlobalPermissions } from "../../../managers/api/Permission";
+import APIManager from "../../../managers/APIManager";
 
-export const ContentSystemTable = ({ folders, content, path }: { folders: ContentFolderObject[], content: ContentObject[], path?: ContentPath }): ReactNode => {
+export const ContentSystemTable = ({ folders, content, path, reload }: { folders: ContentFolderObject[], content: ContentObject[], path?: ContentPath, reload: () => void }): ReactNode => {
     const [sortDirection, setSortDirection] = useState<"ascending" | "descending">("ascending");
     const [sortBy, setSortBy] = useState<"name">("name");
 
@@ -89,6 +92,13 @@ export const ContentSystemTable = ({ folders, content, path }: { folders: Conten
                                 type
                             </Typography>
                         </th>
+                        <th
+                            style={{
+                                width: 60
+                            }}
+                        >
+
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -99,13 +109,21 @@ export const ContentSystemTable = ({ folders, content, path }: { folders: Conten
                                 id: path[path.length - 2].id,
                                 name: ".."
                             }}
+                            tdStyle={{
+                                borderBottom: "1px solid var(--TableCell-borderColor)"
+                            }}
+                            noMore
                         />
                         : path && path.length == 1 ?
                         <FolderRow 
                             folder={{
-                                id: "",
+                                id: "../",
                                 name: ".."
                             }}
+                            tdStyle={{
+                                borderBottom: "1px solid var(--TableCell-borderColor)"
+                            }}
+                            noMore
                         />
                         : null
                     }
@@ -116,6 +134,7 @@ export const ContentSystemTable = ({ folders, content, path }: { folders: Conten
                             <FolderRow
                                 key={x.id}
                                 folder={x}
+                                reload={reload}
                             />
                         ))
                     }
@@ -167,7 +186,7 @@ export const ContentSystemTable = ({ folders, content, path }: { folders: Conten
     )
 }
 
-const FolderRow = ({ folder }: { folder: ContentFolderObject }): ReactNode => {
+const FolderRow = ({ folder, tdStyle, noMore = false, reload }: { folder: ContentFolderObject, tdStyle?: CSSProperties, noMore?: boolean, reload?: () => void }): ReactNode => {
     const navigate = useNavigate();
     
     return (
@@ -179,7 +198,9 @@ const FolderRow = ({ folder }: { folder: ContentFolderObject }): ReactNode => {
                 navigate(`/dashboard/content/folder/${folder.id}`)
             }}
         >
-            <td>
+            <td
+                style={tdStyle}
+            >
                 <Stack
                     direction="row"
                     justifyContent="center"
@@ -191,7 +212,9 @@ const FolderRow = ({ folder }: { folder: ContentFolderObject }): ReactNode => {
                     />
                 </Stack>
             </td>
-            <td>
+            <td
+                style={tdStyle}
+            >
                 {
                     <Typography
                         level="body-sm"
@@ -203,10 +226,32 @@ const FolderRow = ({ folder }: { folder: ContentFolderObject }): ReactNode => {
                     </Typography>
                 }
             </td>
-            <td>
+            <td
+                style={tdStyle}
+            >
                 <Typography>
                     folder
                 </Typography>
+            </td>
+            <td
+                style={{
+                    padding: "0px 4px",
+                    ...tdStyle
+                }}
+            >
+                {
+                    !noMore &&
+                    <FolderRowEditMenu
+                        onOpen={() => {
+                            navigate(`/dashboard/content/folder/${folder.id}`)
+                        }}
+
+                        onDelete={async () => {
+                            await APIManager.content.deleteFolder(folder.id);
+                            reload?.();
+                        }}
+                    />
+                }
             </td>
         </tr>
     );
@@ -218,8 +263,6 @@ const ContentRow = ({ content }: { content: ContentObject }): ReactNode => {
     const iconSx = {
         fontSize: 20
     };
-
-    console.log(content)
 
     return (
         <tr
@@ -255,6 +298,86 @@ const ContentRow = ({ content }: { content: ContentObject }): ReactNode => {
                     { content.type == "number" ? "number content" : "string content" }
                 </Typography>
             </td>
+            <td>
+
+            </td>
         </tr>
+    );
+}
+
+const FolderRowEditMenu = ({ onOpen, onRename, onMove, onDelete }: { onOpen?: MouseEventHandler, onRename?: MouseEventHandler, onMove?: MouseEventHandler, onDelete?: MouseEventHandler }): ReactNode => {
+    return (
+        <Dropdown>
+            <Stack>
+                <MenuButton
+                    slots={{
+                        root: IconButton
+                    }}
+                    slotProps={{
+                        root: {
+                            onClick: e => {
+                                e.stopPropagation();
+                            },
+                            size: "sm"
+                        }
+                    }}
+                >
+                    <MoreHoriz />
+                </MenuButton>
+                <Menu
+                    size="sm"
+                    keepMounted
+                >
+                    <MenuItem
+                        onClick={e => {
+                            e.stopPropagation();
+                            onOpen?.(e);
+                        }}
+                    >
+                        open
+                    </MenuItem>
+                    <GlobalPermissionCheck
+                        permissions={[
+                            GlobalPermissions.EditContentFolders
+                        ]}
+                        discreet
+                    >
+                        <MenuItem
+                            onClick={e => {
+                                e.stopPropagation();
+                                onRename?.(e);
+                            }}
+                        >
+                            rename
+                        </MenuItem>
+                        <MenuItem
+                            onClick={e => {
+                                e.stopPropagation();
+                                onMove?.(e);
+                            }}
+                        >
+                            move
+                        </MenuItem>
+                    </GlobalPermissionCheck>
+                    <GlobalPermissionCheck
+                        permissions={[
+                            GlobalPermissions.DeleteContentFolders
+                        ]}
+                        discreet
+                    >
+                        <Divider />
+                        <MenuItem
+                            color="danger"
+                            onClick={e => {
+                                e.stopPropagation();
+                                onDelete?.(e);
+                            }}
+                        >
+                            delete
+                        </MenuItem>
+                    </GlobalPermissionCheck>
+                </Menu>
+            </Stack>
+        </Dropdown>
     );
 }
