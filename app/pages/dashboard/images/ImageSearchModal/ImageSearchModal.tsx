@@ -299,6 +299,8 @@ export const ImageSearchModal = ({ open, onClose, image, setImage, ...other }: I
     );
 }
 
+// TODO: whatever tabIndex was?
+// @ts-ignore
 const ImageCard = ({ image, onClick, selected = false, tabIndex }: { image: ImageObject, onClick?: React.MouseEventHandler<HTMLButtonElement | undefined>, selected?: boolean, tabIndex?: number }): ReactNode => {
     return (
         <Card

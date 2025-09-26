@@ -14,6 +14,8 @@ export const ContentFolderPage = ({ folderID }: { folderID?: string }): ReactNod
     const [loading, setLoading] = useState<boolean>(true);
     const [folder, setFolder] = useState<ContentFolderObject|undefined>();
     const [childFolderLoading, setChildFolderLoading] = useState<ContentFolderObject[]>();
+    // TODO: error display
+    // @ts-ignore
     const [error, setError] = useState<any>();
 
     const [newFolderOpen, setNewFolderOpen] = useState<boolean>(false);

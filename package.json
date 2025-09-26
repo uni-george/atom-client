@@ -20,6 +20,7 @@
     "@mui/joy": "^5.0.0-beta.49",
     "@react-router/node": "^7.6.3",
     "@types/validator": "^13.15.2",
+    "@uiw/react-md-editor": "^4.0.8",
     "axios": "^1.10.0",
     "color": "^5.0.0",
     "isbot": "^5",

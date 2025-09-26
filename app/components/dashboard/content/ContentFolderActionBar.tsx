@@ -1,4 +1,4 @@
-import { useState, type MouseEventHandler, type ReactNode } from "react";
+import { type MouseEventHandler, type ReactNode } from "react";
 import type { ContentPath } from "../../../managers/api/Content";
 import { Box, Breadcrumbs, Button, Dropdown, FormControl, IconButton, Menu, MenuButton, MenuItem, Link as MUILink, Stack, Typography } from "@mui/joy";
 import { AddRounded, FolderRounded, MoreHorizRounded } from "@mui/icons-material";
@@ -39,14 +39,20 @@ export const ContentFolderActionBar = ({ path, onNewFolder, onNewContent }: Cont
                     }
                 }}
             >
-                <Typography
-                    level="h3"
-                    sx={{
-                        width: "fit-content"
-                    }}
+                <Link
+                    to={"/dashboard/content"}
                 >
-                    /
-                </Typography>
+                    <MUILink
+                        component="div"
+                        level="h3"
+                        textColor="text.primary"
+                        sx={{
+                            width: "fit-content"
+                        }}
+                    >
+                        /
+                    </MUILink>
+                </Link>
                 {
                     path && path.length ?
                         <PathBreadcrumbs
@@ -113,9 +119,6 @@ export const ContentFolderActionBar = ({ path, onNewFolder, onNewContent }: Cont
 }
 
 export const PathBreadcrumbs = ({ path }: { path: ContentPath }): ReactNode => {
-    const [anchorElement, setAnchorElement] = useState<HTMLButtonElement|null>(null);
-
-
     if (path.length < 3) {
         return (
             <Breadcrumbs

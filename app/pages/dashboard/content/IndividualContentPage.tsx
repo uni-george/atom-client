@@ -1,4 +1,4 @@
-import { Link as MUILink, CircularProgress, Divider, Stack, Typography } from "@mui/joy";
+import { Link as MUILink, CircularProgress, Divider, Stack, Typography, Box } from "@mui/joy";
 import { useEffect, useState, type ReactNode } from "react";
 import { DashboardMainContent } from "../../../components/dashboard/DashboardMainContent/DashboardMainContent";
 import type { ContentFolderObject, ContentObject } from "../../../managers/api/Content";
@@ -6,18 +6,25 @@ import APIManager from "../../../managers/APIManager";
 import { PathBreadcrumbs } from "../../../components/dashboard/content/ContentFolderActionBar";
 import { noResultsKaomoji } from "../../../util/noResultsKaomoji";
 import { Link } from "react-router";
+import { ContentMetadataEditor } from "../../../components/dashboard/content/individual/ContentMetadataEditor";
+import { ContentEditor } from "../../../components/dashboard/content/individual/ContentEditor";
 
 export const IndividualContentPage = ({ contentID }: { contentID: string }): ReactNode => {
     const [loading, setLoading] = useState<boolean>(true);
     const [remoteData, setRemoteData] = useState<ContentObject|undefined>(undefined);
     const [parentRemoteData, setParentRemoteData] = useState<ContentFolderObject|undefined>(undefined);
     const [reloadTrigger, setReloadTrigger] = useState<boolean>(false);
+    // TODO: error display
+    // @ts-ignore
     const [error, setError] = useState<string>("");
+
+    const [newData, setNewData] = useState<string | number | undefined>(undefined);
 
     const loadRemoteData = () => {
         setLoading(true);
         APIManager.content.getContent(contentID).then(res => {
             setRemoteData(res);
+            setNewData(res?.data);
         }).catch(e => {
             setError(e?.message || e);
         }).finally(() => {
@@ -32,6 +39,19 @@ export const IndividualContentPage = ({ contentID }: { contentID: string }): Rea
                 setParentRemoteData(res);
             }).catch();
         }
+    }
+
+    const saveNewData = () => {
+        if (!remoteData) return;
+        setLoading(true);
+        APIManager.content.update(remoteData.id, {
+            data: newData
+        }).then(() => {
+            reload();
+        }).catch(e => {
+            setError(e);
+            setLoading(false);
+        });
     }
 
     const reload = () => {
@@ -60,20 +80,34 @@ export const IndividualContentPage = ({ contentID }: { contentID: string }): Rea
                             <CircularProgress />
                         </Stack>
                     : remoteData ?
-                        <>
+                        <Box
+                            sx={{
+                                width: 1
+                            }}
+                        >
                             <Stack
                                 direction="row"
                                 justifyContent="start"
                                 alignContent="center"
                                 sx={{
-                                    width: 1
+                                    width: 1,
+                                    mb: 2
                                 }}
                             >
-                                <Typography
-                                    level="h3"
+                                <Link
+                                    to={"/dashboard/content"}
                                 >
-                                    /
-                                </Typography>
+                                    <MUILink
+                                        component="div"
+                                        level="h3"
+                                        textColor="text.primary"
+                                        sx={{
+                                            width: "fit-content"
+                                        }}
+                                    >
+                                        /
+                                    </MUILink>
+                                </Link>
                                 <PathBreadcrumbs
                                     path={[
                                         ...(parentRemoteData?.path || []),
@@ -84,7 +118,21 @@ export const IndividualContentPage = ({ contentID }: { contentID: string }): Rea
                                     ]}
                                 />
                             </Stack>
-                        </>
+                            <Stack
+                                gap={3}
+                                width={1}
+                            >
+                                <ContentEditor
+                                    remoteData={remoteData}
+                                    newData={newData}
+                                    setNewData={setNewData}
+                                    onSaveNewData={() => {
+                                        saveNewData();
+                                    }}
+                                />
+                                <ContentMetadataEditor />
+                            </Stack>
+                        </Box>
                     :
                         <Stack
                             width={1}

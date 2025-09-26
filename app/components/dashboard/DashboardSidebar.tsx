@@ -2,7 +2,7 @@ import { Box, Divider, GlobalStyles, List, ListItem, ListItemButton, listItemBut
 import { type ReactNode } from "react";
 import { ModeSwitcher } from "../ModeSwitcher/ModeSwitcher";
 import { AtomLogo } from "../branding/AtomLogo/AtomLogo";
-import { ChatBubbleRounded, DashboardRounded, FolderRounded, GroupRounded, GroupsRounded, HomeRounded, ImageRounded, NoteRounded, NotesRounded, VerticalSplitRounded, ViewCarouselRounded } from "@mui/icons-material";
+import { ChatBubbleRounded, DashboardRounded, FolderRounded, GroupRounded, GroupsRounded, HomeRounded, ImageRounded, NoteRounded, VerticalSplitRounded, ViewCarouselRounded } from "@mui/icons-material";
 import { SidebarProfile } from "./SidebarProfile";
 import useDashboardNavigation from "../../util/useDashboardNavigation";
 import { DashboardSidebarTabs } from "../../../types/dashboardSidebar";

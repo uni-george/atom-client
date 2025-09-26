@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type CSSProperties, type MouseEventHandler, type ReactNode, type TdHTMLAttributes } from "react";
+import { useEffect, useState, type CSSProperties, type MouseEventHandler, type ReactNode } from "react";
 import type { ContentFolderObject, ContentObject, ContentPath } from "../../../managers/api/Content";
 import { Divider, Dropdown, IconButton, Link, Menu, MenuButton, MenuItem, Sheet, Stack, Table, Typography } from "@mui/joy";
 import { noResultsKaomoji } from "../../../util/noResultsKaomoji";

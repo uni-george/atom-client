@@ -76,6 +76,27 @@ export class Content {
         }
     }
 
+    static async update(id: string, { name, type, data, parentID, removeParent }: { name?: string | null, type?: "string" | "number", data?: string | number, parentID?: string, removeParent?: boolean }): Promise<ContentObject|undefined> {
+        try {
+            let res = await APIManager.request({
+                method: "patch",
+                url: `/content/${encodeURIComponent(id)}`,
+                data: {
+                    name,
+                    type,
+                    data,
+                    parentID,
+                    removeParent
+                }
+            });
+
+            if (!res) return undefined;
+            else return res.data;
+        } catch {
+            return undefined;
+        }
+    }
+
     static async createFolder(name: string, parentID?: string): Promise<ContentFolderObject|undefined> {
         try {
             let res = await APIManager.request({

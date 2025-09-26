@@ -12,6 +12,8 @@ import { NewContentModal } from "./NewContentModal";
 export const ContentBasePage = (): ReactNode => {
     const [topLevel, setTopLevel] = useState<{ folders: ContentFolderObject[], content: ContentObject[] }|undefined>();
     const [loading, setLoading] = useState<boolean>(true);
+    // TODO: error display
+    // @ts-ignore
     const [error, setError] = useState<any>("");
     const [triggerReload, setTriggerReload] = useState<boolean>(false);
     const navigate = useNavigate();
